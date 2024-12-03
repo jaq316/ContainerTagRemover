@@ -1,0 +1,7 @@
+{
+  "tasks": {
+    "test": "cd tests/ContainerTagRemover.Tests && dotnet test",
+    "build": "cd src/ContainerTagRemover && dotnet build",
+    "launch": "dotnet run --project src/ContainerTagRemover/ContainerTagRemover.csproj -- <registry> <repository> <config-file>"
+  }
+}
