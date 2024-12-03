@@ -10,7 +10,7 @@ namespace ContainerTagRemover
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             if (args.Length != 3)
             {
@@ -46,7 +46,7 @@ namespace ContainerTagRemover
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
             var tagRemovalService = serviceProvider.GetService<TagRemovalService>();
-            tagRemovalService.RemoveOldTags(repository, config);
+            await tagRemovalService.RemoveOldTagsAsync(repository, config);
         }
 
         private static void ConfigureServices(IServiceCollection services, string registry)

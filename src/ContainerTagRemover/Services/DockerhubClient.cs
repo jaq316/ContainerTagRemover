@@ -7,7 +7,7 @@ using ContainerTagRemover.Interfaces;
 
 namespace ContainerTagRemover.Services
 {
-    public class DockerhubClient : IContainerRegistryClient
+    public class DockerhubClient : IContainerRegistryClient, IAuthenticationClient
     {
         private readonly IAuthenticationClient _authenticationClient;
         private readonly HttpClient _httpClient;
