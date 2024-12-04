@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using ContainerTagRemover.Configuration;
 using ContainerTagRemover.Services;
 using ContainerTagRemover.Interfaces;
@@ -23,26 +22,20 @@ namespace ContainerTagRemover
             string repository = args[1];
             string configFilePath = args[2];
 
-            if (!File.Exists(configFilePath))
-            {
-                Console.WriteLine($"Configuration file not found: {configFilePath}");
-                return;
-            }
-
             TagRemovalConfig config;
             try
             {
-                string configContent = File.ReadAllText(configFilePath);
-                config = JsonConvert.DeserializeObject<TagRemovalConfig>(configContent);
+                config = TagRemovalConfig.LoadFromFile(configFilePath);
+                config.Validate();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error reading configuration file: {ex.Message}");
+                Console.WriteLine($"Error reading or validating configuration file: {ex.Message}");
                 return;
             }
 
             var serviceCollection = new ServiceCollection();
-            ConfigureServices(serviceCollection, registry);
+            ConfigureServices(serviceCollection, registry, config);
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -50,8 +43,9 @@ namespace ContainerTagRemover
             await tagRemovalService.RemoveOldTagsAsync(repository);
         }
 
-        private static void ConfigureServices(IServiceCollection services, string registry)
+        private static void ConfigureServices(IServiceCollection services, string registry, TagRemovalConfig config)
         {
+            services.AddSingleton(config);
             services.AddSingleton<TagRemovalService>();
 
             switch (registry.ToLower())

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using ContainerTagRemover.Interfaces;
 using ContainerTagRemover.Services;
+using ContainerTagRemover.Configuration;
 
 namespace ContainerTagRemover.DependencyInjection
 {
@@ -11,7 +12,7 @@ namespace ContainerTagRemover.DependencyInjection
             services.AddSingleton<IAuthenticationClient, DockerhubClient>();
             services.AddSingleton<IContainerRegistryClient, DockerhubClient>();
             services.AddSingleton<IContainerRegistryClient, AzureContainerRegistryClient>();
-            services.AddSingleton<TagRemovalService>();
+            services.AddSingleton<TagRemovalConfig>();
 
             return services;
         }

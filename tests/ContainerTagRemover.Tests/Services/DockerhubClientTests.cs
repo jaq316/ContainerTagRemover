@@ -7,20 +7,24 @@ using ContainerTagRemover.Services;
 using Moq;
 using Shouldly;
 using Xunit;
+using System.Threading;
+using Moq.Protected;
 
 namespace ContainerTagRemover.Tests.Services
 {
     public class DockerhubClientTests
     {
         private readonly Mock<IAuthenticationClient> _mockAuthenticationClient;
-        private readonly Mock<HttpClient> _mockHttpClient;
+        private readonly Mock<HttpMessageHandler> _mockHttpMessageHandler;
+        private readonly HttpClient _httpClient;
         private readonly DockerhubClient _dockerhubClient;
 
         public DockerhubClientTests()
         {
             _mockAuthenticationClient = new Mock<IAuthenticationClient>();
-            _mockHttpClient = new Mock<HttpClient>();
-            _dockerhubClient = new DockerhubClient(_mockAuthenticationClient.Object, _mockHttpClient.Object);
+            _mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+            _httpClient = new HttpClient(_mockHttpMessageHandler.Object);
+            _dockerhubClient = new DockerhubClient(_mockAuthenticationClient.Object, _httpClient);
         }
 
         [Fact]
@@ -41,20 +45,25 @@ namespace ContainerTagRemover.Tests.Services
         {
             // Arrange
             var repository = "test-repo";
-            var tags = new List<string> { "tag1", "tag2" };
+            var responseContent = "{\"tags\": [\"v1.0.0\", \"v1.0.1\"]}";
             var responseMessage = new HttpResponseMessage
             {
                 StatusCode = System.Net.HttpStatusCode.OK,
-                Content = new StringContent("[\"tag1\", \"tag2\"]")
+                Content = new StringContent(responseContent)
             };
-
-            _mockHttpClient.Setup(x => x.SendAsync(It.IsAny<HttpRequestMessage>())).ReturnsAsync(responseMessage);
+            _mockHttpMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>()
+                )
+                .ReturnsAsync(responseMessage);
 
             // Act
-            var result = await _dockerhubClient.ListTagsAsync(repository);
+            var tags = await _dockerhubClient.ListTagsAsync(repository);
 
             // Assert
-            result.ShouldBe(tags);
+            tags.ShouldBe(new List<string> { "v1.0.0", "v1.0.1" });
         }
 
         [Fact]
@@ -68,16 +77,27 @@ namespace ContainerTagRemover.Tests.Services
                 StatusCode = System.Net.HttpStatusCode.OK
             };
 
-            _mockHttpClient.Setup(x => x.SendAsync(It.IsAny<HttpRequestMessage>())).ReturnsAsync(responseMessage);
+            _mockHttpMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>()
+                )
+                .ReturnsAsync(responseMessage);
 
             // Act
             await _dockerhubClient.DeleteTagAsync(repository, tag);
 
             // Assert
-            _mockHttpClient.Verify(x => x.SendAsync(It.Is<HttpRequestMessage>(req =>
-                req.Method == HttpMethod.Delete &&
-                req.RequestUri == new Uri($"https://hub.docker.com/v2/repositories/{repository}/tags/{tag}")
-            )), Times.Once);
+            _mockHttpMessageHandler.Protected().Verify(
+                "SendAsync",
+                Times.Once(),
+                ItExpr.Is<HttpRequestMessage>(req =>
+                    req.Method == HttpMethod.Delete &&
+                    req.RequestUri == new Uri($"https://hub.docker.com/v2/repositories/{repository}/tags/{tag}")
+                ),
+                ItExpr.IsAny<CancellationToken>()
+            );
         }
     }
 }

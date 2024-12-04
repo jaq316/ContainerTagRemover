@@ -19,7 +19,7 @@ namespace ContainerTagRemover.Tests.Services
         public TagRemovalServiceTests()
         {
             _mockRegistryClient = new Mock<IContainerRegistryClient>();
-            _config = new TagRemovalConfig { Major = 1, Minor = 1, Patch = 1 };
+            _config = TagRemovalConfig.LoadFromFile("test-config.json");
             _tagRemovalService = new TagRemovalService(_mockRegistryClient.Object, _config);
         }
 

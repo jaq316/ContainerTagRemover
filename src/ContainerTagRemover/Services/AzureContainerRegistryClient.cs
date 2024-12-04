@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using ContainerTagRemover.Interfaces;
+using Newtonsoft.Json.Linq;
 
 namespace ContainerTagRemover.Services
 {
@@ -51,8 +52,9 @@ namespace ContainerTagRemover.Services
 
         private IEnumerable<string> ParseTags(string content)
         {
-            // Implement tag parsing logic here
-            throw new NotImplementedException();
+            var json = JObject.Parse(content);
+            var tags = json["tags"].ToObject<List<string>>();
+            return tags;
         }
     }
 }
