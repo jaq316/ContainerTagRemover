@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace ContainerTagRemover.Configuration
 {
@@ -34,7 +34,7 @@ namespace ContainerTagRemover.Configuration
                 using (StreamReader reader = new StreamReader(stream))
                 {
                     string configContent = reader.ReadToEnd();
-                    return JsonConvert.DeserializeObject<TagRemovalConfig>(configContent);
+                    return JsonSerializer.Deserialize<TagRemovalConfig>(configContent);
                 }
             }
             catch (Exception ex)
