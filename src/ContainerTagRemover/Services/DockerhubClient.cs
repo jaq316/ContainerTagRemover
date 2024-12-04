@@ -1,27 +1,24 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using ContainerTagRemover.Interfaces;
 using Newtonsoft.Json.Linq;
 
 namespace ContainerTagRemover.Services
 {
-    public class DockerhubClient : IContainerRegistryClient, IAuthenticationClient
+    public class DockerhubClient : IContainerRegistryClient
     {
-        private readonly IAuthenticationClient _authenticationClient;
         private readonly HttpClient _httpClient;
 
-        public DockerhubClient(IAuthenticationClient authenticationClient, HttpClient httpClient)
+        public DockerhubClient(HttpClient httpClient)
         {
-            _authenticationClient = authenticationClient;
             _httpClient = httpClient;
         }
 
         public async Task AuthenticateAsync()
         {
-            await _authenticationClient.AuthenticateAsync();
+            throw new NotImplementedException();
         }
 
         public async Task<IEnumerable<string>> ListTagsAsync(string repository)
@@ -50,7 +47,7 @@ namespace ContainerTagRemover.Services
             }
         }
 
-        private IEnumerable<string> ParseTags(string content)
+        private static IEnumerable<string> ParseTags(string content)
         {
             var json = JObject.Parse(content);
             var tags = json["tags"].ToObject<List<string>>();

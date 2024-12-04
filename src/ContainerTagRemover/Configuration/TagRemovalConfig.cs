@@ -8,9 +8,8 @@ namespace ContainerTagRemover.Configuration
     {
         public int Major { get; set; }
         public int Minor { get; set; }
-        public int Patch { get; set; }
 
-        public static TagRemovalConfig LoadFromFile(string filePath)
+        public static TagRemovalConfig Load(string filePath)
         {
             if (!File.Exists(filePath))
             {
@@ -19,8 +18,24 @@ namespace ContainerTagRemover.Configuration
 
             try
             {
-                string configContent = File.ReadAllText(filePath);
-                return JsonConvert.DeserializeObject<TagRemovalConfig>(configContent);
+                FileStream configStream = File.Open(filePath, FileMode.Open);
+                return Load(configStream);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Error reading configuration file: {ex.Message}");
+            }
+        }
+
+        public static TagRemovalConfig Load(Stream stream)
+        {
+            try
+            {
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    string configContent = reader.ReadToEnd();
+                    return JsonConvert.DeserializeObject<TagRemovalConfig>(configContent);
+                }
             }
             catch (Exception ex)
             {
@@ -30,9 +45,9 @@ namespace ContainerTagRemover.Configuration
 
         public void Validate()
         {
-            if (Major < 0 || Minor < 0 || Patch < 0)
+            if (Major < 0 || Minor < 0)
             {
-                throw new InvalidOperationException("Configuration values for Major, Minor, and Patch must be non-negative.");
+                throw new InvalidOperationException("Configuration values for Major and Minor must be non-negative.");
             }
         }
     }

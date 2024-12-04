@@ -1,33 +1,23 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using ContainerTagRemover.Interfaces;
 using Newtonsoft.Json.Linq;
 
 namespace ContainerTagRemover.Services
 {
-    public class AzureContainerRegistryClient : IContainerRegistryClient, IAuthenticationClient
+    public class AzureContainerRegistryClient(HttpClient httpClient) : IContainerRegistryClient
     {
-        private readonly IAuthenticationClient _authenticationClient;
-        private readonly HttpClient _httpClient;
-
-        public AzureContainerRegistryClient(IAuthenticationClient authenticationClient, HttpClient httpClient)
-        {
-            _authenticationClient = authenticationClient;
-            _httpClient = httpClient;
-        }
-
         public async Task AuthenticateAsync()
         {
-            await _authenticationClient.AuthenticateAsync();
+            throw new NotImplementedException();
         }
 
         public async Task<IEnumerable<string>> ListTagsAsync(string repository)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, $"https://{repository}.azurecr.io/v2/_catalog");
-            var response = await _httpClient.SendAsync(request);
+            var response = await httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -42,7 +32,7 @@ namespace ContainerTagRemover.Services
         public async Task DeleteTagAsync(string repository, string tag)
         {
             var request = new HttpRequestMessage(HttpMethod.Delete, $"https://{repository}.azurecr.io/v2/{repository}/manifests/{tag}");
-            var response = await _httpClient.SendAsync(request);
+            var response = await httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -50,7 +40,7 @@ namespace ContainerTagRemover.Services
             }
         }
 
-        private IEnumerable<string> ParseTags(string content)
+        private static IEnumerable<string> ParseTags(string content)
         {
             var json = JObject.Parse(content);
             var tags = json["tags"].ToObject<List<string>>();

@@ -1,43 +1,21 @@
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
-using ContainerTagRemover.Interfaces;
 using ContainerTagRemover.Services;
 using Moq;
 using Shouldly;
-using Xunit;
-using System.Threading;
 using Moq.Protected;
 
 namespace ContainerTagRemover.Tests.Services
 {
     public class AzureContainerRegistryClientTests
     {
-        private readonly Mock<IAuthenticationClient> _mockAuthenticationClient;
         private readonly Mock<HttpMessageHandler> _mockHttpMessageHandler;
         private readonly HttpClient _httpClient;
         private readonly AzureContainerRegistryClient _client;
 
         public AzureContainerRegistryClientTests()
         {
-            _mockAuthenticationClient = new Mock<IAuthenticationClient>();
             _mockHttpMessageHandler = new Mock<HttpMessageHandler>();
             _httpClient = new HttpClient(_mockHttpMessageHandler.Object);
-            _client = new AzureContainerRegistryClient(_mockAuthenticationClient.Object, _httpClient);
-        }
-
-        [Fact]
-        public async Task AuthenticateAsync_Should_Call_AuthenticateAsync_On_AuthenticationClient()
-        {
-            // Arrange
-            _mockAuthenticationClient.Setup(x => x.AuthenticateAsync()).Returns(Task.CompletedTask);
-
-            // Act
-            await _client.AuthenticateAsync();
-
-            // Assert
-            _mockAuthenticationClient.Verify(x => x.AuthenticateAsync(), Times.Once);
+            _client = new AzureContainerRegistryClient( _httpClient);
         }
 
         [Fact]

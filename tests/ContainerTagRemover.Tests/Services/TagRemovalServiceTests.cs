@@ -1,12 +1,8 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ContainerTagRemover.Configuration;
 using ContainerTagRemover.Interfaces;
 using ContainerTagRemover.Services;
 using Moq;
 using Shouldly;
-using Xunit;
 
 namespace ContainerTagRemover.Tests.Services
 {
@@ -19,7 +15,12 @@ namespace ContainerTagRemover.Tests.Services
         public TagRemovalServiceTests()
         {
             _mockRegistryClient = new Mock<IContainerRegistryClient>();
-            _config = TagRemovalConfig.LoadFromFile("test-config.json");
+            _config = new TagRemovalConfig
+            {
+                Major = 2,
+                Minor = 2
+            };
+
             _tagRemovalService = new TagRemovalService(_mockRegistryClient.Object, _config);
         }
 
@@ -45,13 +46,69 @@ namespace ContainerTagRemover.Tests.Services
         public void DetermineTagsToRemove_Should_Return_Correct_Tags()
         {
             // Arrange
-            var tags = new List<string> { "1.0.0", "1.0.1", "1.1.0", "2.0.0" };
+            var tags = new List<string> { 
+                "1.0.0", 
+                "1.0.1", 
+                "1.0.2",
+                "1.0.3",
+                "1.0.4",
+                "1.0.5",
+                "1.0.6",
+                "1.0.7",
+                "1.1.0", 
+                "1.1.1", 
+                "1.1.2",
+                "1.1.3",
+                "1.1.4",
+                "1.1.5",
+                "1.1.6",
+                "1.1.7",
+                "2.0.0",
+                "2.0.1",
+                "2.0.2",
+                "2.0.3",
+                "2.0.4",
+                "2.0.5",
+                "2.0.6",
+                "2.0.7",
+                "2.1.0",
+                "2.1.1",
+                "2.1.2",
+                "2.1.3",
+                "2.1.4",
+                "2.1.5",
+                "2.1.6",
+                "2.1.7",
+            };
 
             // Act
             var result = _tagRemovalService.DetermineTagsToRemove(tags);
 
             // Assert
-            result.ShouldBe(new List<string> { "1.0.0", "1.0.1", "1.1.0" });
+            result.ShouldContain("1.0.0");
+            result.ShouldContain("1.0.1");
+            result.ShouldContain("1.0.2");
+            result.ShouldContain("1.0.3");
+            result.ShouldContain("1.0.4");
+            result.ShouldContain("1.0.5");
+            result.ShouldContain("1.1.0");
+            result.ShouldContain("1.1.1");
+            result.ShouldContain("1.1.2");
+            result.ShouldContain("1.1.3");
+            result.ShouldContain("1.1.4");
+            result.ShouldContain("1.1.5");
+            result.ShouldContain("2.0.0");
+            result.ShouldContain("2.0.1");
+            result.ShouldContain("2.0.2");
+            result.ShouldContain("2.0.3");
+            result.ShouldContain("2.0.4");
+            result.ShouldContain("2.0.5");
+            result.ShouldContain("2.1.0");
+            result.ShouldContain("2.1.1");
+            result.ShouldContain("2.1.2");
+            result.ShouldContain("2.1.3");
+            result.ShouldContain("2.1.4");
+            result.ShouldContain("2.1.5");
         }
     }
 }

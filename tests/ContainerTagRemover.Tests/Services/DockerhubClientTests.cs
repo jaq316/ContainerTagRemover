@@ -1,44 +1,23 @@
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
-using ContainerTagRemover.Interfaces;
 using ContainerTagRemover.Services;
 using Moq;
 using Shouldly;
-using Xunit;
-using System.Threading;
 using Moq.Protected;
 
 namespace ContainerTagRemover.Tests.Services
 {
     public class DockerhubClientTests
     {
-        private readonly Mock<IAuthenticationClient> _mockAuthenticationClient;
         private readonly Mock<HttpMessageHandler> _mockHttpMessageHandler;
         private readonly HttpClient _httpClient;
         private readonly DockerhubClient _dockerhubClient;
 
         public DockerhubClientTests()
         {
-            _mockAuthenticationClient = new Mock<IAuthenticationClient>();
             _mockHttpMessageHandler = new Mock<HttpMessageHandler>();
             _httpClient = new HttpClient(_mockHttpMessageHandler.Object);
-            _dockerhubClient = new DockerhubClient(_mockAuthenticationClient.Object, _httpClient);
+            _dockerhubClient = new DockerhubClient(_httpClient);
         }
 
-        [Fact]
-        public async Task AuthenticateAsync_Should_Call_AuthenticateAsync_On_AuthenticationClient()
-        {
-            // Arrange
-            _mockAuthenticationClient.Setup(x => x.AuthenticateAsync()).Returns(Task.CompletedTask);
-
-            // Act
-            await _dockerhubClient.AuthenticateAsync();
-
-            // Assert
-            _mockAuthenticationClient.Verify(x => x.AuthenticateAsync(), Times.Once);
-        }
 
         [Fact]
         public async Task ListTagsAsync_Should_Return_Tags()

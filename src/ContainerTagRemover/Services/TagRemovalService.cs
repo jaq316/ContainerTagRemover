@@ -8,8 +8,16 @@ using Semver;
 
 namespace ContainerTagRemover.Services
 {
+    public class VersionComparer : IComparer<SemVersion>
+    {
+        public int Compare(SemVersion x, SemVersion y)
+        {
+            return x.CompareSortOrderTo(y);
+        }
+    }
     public class TagRemovalService
     {
+
         private readonly IContainerRegistryClient _registryClient;
         private readonly TagRemovalConfig _config;
 
@@ -35,19 +43,18 @@ namespace ContainerTagRemover.Services
             var semverTags = tags
                 .Select(tag => SemVersion.TryParse(tag, out var version) ? version : null)
                 .Where(version => version != null)
-                .OrderByDescending(version => version)
+                .OrderByDescending(version => version, new VersionComparer())
                 .ToList();
 
             var tagsToKeep = new HashSet<SemVersion>();
 
             KeepLatestVersions(semverTags, tagsToKeep, _config.Major, v => v.Major);
             KeepLatestVersions(semverTags, tagsToKeep, _config.Minor, v => (v.Major, v.Minor));
-            KeepLatestVersions(semverTags, tagsToKeep, _config.Patch, v => (v.Major, v.Minor, v.Patch));
 
-            return semverTags.Except(tagsToKeep).Select(v => v.ToString());
+            return semverTags.Where(v => !tagsToKeep.Any(t => t.ToString() == v.ToString())).Select(v => v.ToString());
         }
 
-        private void KeepLatestVersions<T>(List<SemVersion> semverTags, HashSet<SemVersion> tagsToKeep, int count, Func<SemVersion, T> keySelector)
+        private static void KeepLatestVersions<T>(List<SemVersion> semverTags, HashSet<SemVersion> tagsToKeep, int count, Func<SemVersion, T> keySelector)
         {
             var groupedTags = semverTags.GroupBy(keySelector);
 

@@ -9,10 +9,15 @@ namespace ContainerTagRemover.DependencyInjection
     {
         public static IServiceCollection AddContainerTagRemoverServices(this IServiceCollection services)
         {
-            services.AddSingleton<IAuthenticationClient, DockerhubClient>();
+            services.AddHttpClient();
             services.AddSingleton<IContainerRegistryClient, DockerhubClient>();
             services.AddSingleton<IContainerRegistryClient, AzureContainerRegistryClient>();
-            services.AddSingleton<TagRemovalConfig>();
+            services.AddSingleton<TagRemovalService>();
+            services.AddSingleton((s) => new TagRemovalConfig()
+            {
+                Major = 2,
+                Minor = 2
+            });
 
             return services;
         }

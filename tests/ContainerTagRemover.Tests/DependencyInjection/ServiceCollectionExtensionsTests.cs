@@ -20,13 +20,12 @@ namespace ContainerTagRemover.Tests.DependencyInjection
             services.AddContainerTagRemoverServices();
             var serviceProvider = services.BuildServiceProvider();
 
+
             // Assert
-            var authenticationClient = serviceProvider.GetService<IAuthenticationClient>();
             var dockerhubClient = serviceProvider.GetService<IContainerRegistryClient>();
             var azureContainerRegistryClient = serviceProvider.GetService<IContainerRegistryClient>();
             var tagRemovalService = serviceProvider.GetService<TagRemovalService>();
 
-            authenticationClient.ShouldNotBeNull();
             dockerhubClient.ShouldNotBeNull();
             azureContainerRegistryClient.ShouldNotBeNull();
             tagRemovalService.ShouldNotBeNull();

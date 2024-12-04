@@ -12,17 +12,16 @@ namespace ContainerTagRemover.Tests.Configuration
         public void LoadFromFile_ShouldLoadConfigSuccessfully()
         {
             // Arrange
-            string configContent = "{\"Major\": 5, \"Minor\": 10, \"Patch\": 20}";
+            string configContent = "{\"Major\": 5, \"Minor\": 10}";
             string tempFilePath = Path.GetTempFileName();
             File.WriteAllText(tempFilePath, configContent);
 
             // Act
-            TagRemovalConfig config = TagRemovalConfig.LoadFromFile(tempFilePath);
+            TagRemovalConfig config = TagRemovalConfig.Load(tempFilePath);
 
             // Assert
             config.Major.ShouldBe(5);
             config.Minor.ShouldBe(10);
-            config.Patch.ShouldBe(20);
 
             // Cleanup
             File.Delete(tempFilePath);
@@ -35,7 +34,7 @@ namespace ContainerTagRemover.Tests.Configuration
             string nonExistentFilePath = "nonexistent.json";
 
             // Act & Assert
-            Should.Throw<FileNotFoundException>(() => TagRemovalConfig.LoadFromFile(nonExistentFilePath));
+            Should.Throw<FileNotFoundException>(() => TagRemovalConfig.Load(nonExistentFilePath));
         }
 
         [Fact]
@@ -47,7 +46,7 @@ namespace ContainerTagRemover.Tests.Configuration
             File.WriteAllText(tempFilePath, invalidConfigContent);
 
             // Act & Assert
-            Should.Throw<InvalidOperationException>(() => TagRemovalConfig.LoadFromFile(tempFilePath));
+            Should.Throw<InvalidOperationException>(() => TagRemovalConfig.Load(tempFilePath));
 
             // Cleanup
             File.Delete(tempFilePath);
@@ -57,7 +56,7 @@ namespace ContainerTagRemover.Tests.Configuration
         public void Validate_ShouldThrowInvalidOperationException_WhenConfigValuesAreNegative()
         {
             // Arrange
-            var config = new TagRemovalConfig { Major = -1, Minor = 10, Patch = 20 };
+            var config = new TagRemovalConfig { Major = -1, Minor = 10 };
 
             // Act & Assert
             Should.Throw<InvalidOperationException>(() => config.Validate());
@@ -67,7 +66,7 @@ namespace ContainerTagRemover.Tests.Configuration
         public void Validate_ShouldNotThrowException_WhenConfigValuesAreNonNegative()
         {
             // Arrange
-            var config = new TagRemovalConfig { Major = 5, Minor = 10, Patch = 20 };
+            var config = new TagRemovalConfig { Major = 5, Minor = 10 };
 
             // Act & Assert
             Should.NotThrow(() => config.Validate());

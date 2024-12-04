@@ -8,7 +8,7 @@ using ContainerTagRemover.Interfaces;
 
 namespace ContainerTagRemover
 {
-    class Program
+    static class Program
     {
         static async Task Main(string[] args)
         {
@@ -25,7 +25,7 @@ namespace ContainerTagRemover
             TagRemovalConfig config;
             try
             {
-                config = TagRemovalConfig.LoadFromFile(configFilePath);
+                config = TagRemovalConfig.Load(configFilePath);
                 config.Validate();
             }
             catch (Exception ex)
