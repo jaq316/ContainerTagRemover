@@ -7,7 +7,7 @@ using ContainerTagRemover.Interfaces;
 
 namespace ContainerTagRemover.Services
 {
-    public class AzureContainerRegistryClient : IContainerRegistryClient
+    public class AzureContainerRegistryClient : IContainerRegistryClient, IAuthenticationClient
     {
         private readonly IAuthenticationClient _authenticationClient;
         private readonly HttpClient _httpClient;
