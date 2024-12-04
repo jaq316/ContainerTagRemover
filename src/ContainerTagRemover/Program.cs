@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using ContainerTagRemover.Configuration;
@@ -46,7 +47,7 @@ namespace ContainerTagRemover
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
             var tagRemovalService = serviceProvider.GetService<TagRemovalService>();
-            await tagRemovalService.RemoveOldTagsAsync(repository, config);
+            await tagRemovalService.RemoveOldTagsAsync(repository);
         }
 
         private static void ConfigureServices(IServiceCollection services, string registry)

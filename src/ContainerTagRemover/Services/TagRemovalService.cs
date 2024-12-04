@@ -30,7 +30,7 @@ namespace ContainerTagRemover.Services
             }
         }
 
-        private IEnumerable<string> DetermineTagsToRemove(IEnumerable<string> tags)
+        public IEnumerable<string> DetermineTagsToRemove(IEnumerable<string> tags)
         {
             var semverTags = tags
                 .Select(tag => SemVersion.TryParse(tag, out var version) ? version : null)
