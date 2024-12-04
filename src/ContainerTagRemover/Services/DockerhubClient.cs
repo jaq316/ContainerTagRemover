@@ -10,6 +10,9 @@ namespace ContainerTagRemover.Services
     public class DockerhubClient : IContainerRegistryClient
     {
         private readonly HttpClient _httpClient;
+        private string _username;
+        private string _password;
+        private string _token;
 
         public DockerhubClient(HttpClient httpClient)
         {
@@ -18,12 +21,34 @@ namespace ContainerTagRemover.Services
 
         public async Task AuthenticateAsync()
         {
-            throw new NotImplementedException();
+            _username = Environment.GetEnvironmentVariable("DOCKERHUB_USERNAME");
+            _password = Environment.GetEnvironmentVariable("DOCKERHUB_PASSWORD");
+
+            if (string.IsNullOrEmpty(_username) || string.IsNullOrEmpty(_password))
+            {
+                throw new InvalidOperationException("Environment variables DOCKERHUB_USERNAME and DOCKERHUB_PASSWORD must be set.");
+            }
+
+            var request = new HttpRequestMessage(HttpMethod.Post, "https://hub.docker.com/v2/users/login/");
+            var content = new StringContent(JsonSerializer.Serialize(new { username = _username, password = _password }), System.Text.Encoding.UTF8, "application/json");
+            request.Content = content;
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new InvalidOperationException($"Failed to authenticate with DockerHub: {response.ReasonPhrase}");
+            }
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var jsonDocument = JsonDocument.Parse(responseContent);
+            _token = jsonDocument.RootElement.GetProperty("token").GetString();
         }
 
         public async Task<IEnumerable<string>> ListTagsAsync(string repository)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, $"https://hub.docker.com/v2/repositories/{repository}/tags");
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _token);
             var response = await _httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
@@ -39,6 +64,7 @@ namespace ContainerTagRemover.Services
         public async Task DeleteTagAsync(string repository, string tag)
         {
             var request = new HttpRequestMessage(HttpMethod.Delete, $"https://hub.docker.com/v2/repositories/{repository}/tags/{tag}");
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _token);
             var response = await _httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)

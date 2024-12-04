@@ -78,5 +78,39 @@ namespace ContainerTagRemover.Tests.Services
                 ItExpr.IsAny<CancellationToken>()
             );
         }
+
+        [Fact]
+        public async Task AuthenticateAsync_Should_Authenticate_Using_Environment_Variables()
+        {
+            // Arrange
+            Environment.SetEnvironmentVariable("DOCKERHUB_USERNAME", "test-username");
+            Environment.SetEnvironmentVariable("DOCKERHUB_PASSWORD", "test-password");
+
+            var responseContent = "{\"token\": \"test-token\"}";
+            var responseMessage = new HttpResponseMessage
+            {
+                StatusCode = System.Net.HttpStatusCode.OK,
+                Content = new StringContent(responseContent)
+            };
+
+            _mockHttpMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.Is<HttpRequestMessage>(req =>
+                        req.Method == HttpMethod.Post &&
+                        req.RequestUri == new Uri("https://hub.docker.com/v2/users/login/") &&
+                        req.Content.ReadAsStringAsync().Result.Contains("test-username") &&
+                        req.Content.ReadAsStringAsync().Result.Contains("test-password")
+                    ),
+                    ItExpr.IsAny<CancellationToken>()
+                )
+                .ReturnsAsync(responseMessage);
+
+            // Act
+            await _dockerhubClient.AuthenticateAsync();
+
+            // Assert
+            _dockerhubClient.ShouldNotBeNull();
+        }
     }
 }
