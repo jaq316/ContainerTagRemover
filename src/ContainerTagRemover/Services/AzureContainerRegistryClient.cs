@@ -2,22 +2,50 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
+using Azure.Core;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using ContainerTagRemover.Interfaces;
 
 namespace ContainerTagRemover.Services
 {
-    public class AzureContainerRegistryClient(HttpClient httpClient) : IContainerRegistryClient
+    public class AzureContainerRegistryClient : IContainerRegistryClient
     {
-        public async Task AuthenticateAsync()
+        private readonly HttpClient _httpClient;
+        private string _accessToken;
+
+        public AzureContainerRegistryClient(HttpClient httpClient)
         {
-            throw new NotImplementedException();
+            _httpClient = httpClient;
+        }
+
+        public async Task AuthenticateAsync(CancellationToken cancellationToken = default)
+        {
+            var tenantId = Environment.GetEnvironmentVariable("AZURE_TENANT_ID");
+            var clientId = Environment.GetEnvironmentVariable("AZURE_CLIENT_ID");
+            var clientSecret = Environment.GetEnvironmentVariable("AZURE_CLIENT_SECRET");
+
+            if (string.IsNullOrEmpty(tenantId) || string.IsNullOrEmpty(clientId))
+            {
+                throw new InvalidOperationException("Environment variables AZURE_TENANT_ID and AZURE_CLIENT_ID must be set.");
+            }
+
+            TokenCredential credential = string.IsNullOrEmpty(clientSecret)
+                ? (TokenCredential)new DefaultAzureCredential()
+                : new ClientSecretCredential(tenantId, clientId, clientSecret);
+
+            var tokenRequestContext = new TokenRequestContext(new[] { "https://management.azure.com/.default" });
+            var token = await credential.GetTokenAsync(tokenRequestContext, cancellationToken);
+            _accessToken = token.Token;
         }
 
         public async Task<IEnumerable<string>> ListTagsAsync(string repository)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, $"https://{repository}.azurecr.io/v2/_catalog");
-            var response = await httpClient.SendAsync(request);
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _accessToken);
+            var response = await _httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -32,7 +60,8 @@ namespace ContainerTagRemover.Services
         public async Task DeleteTagAsync(string repository, string tag)
         {
             var request = new HttpRequestMessage(HttpMethod.Delete, $"https://{repository}.azurecr.io/v2/{repository}/manifests/{tag}");
-            var response = await httpClient.SendAsync(request);
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _accessToken);
+            var response = await _httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
             {

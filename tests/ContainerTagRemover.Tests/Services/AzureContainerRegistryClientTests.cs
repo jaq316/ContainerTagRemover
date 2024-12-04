@@ -2,6 +2,8 @@ using ContainerTagRemover.Services;
 using Moq;
 using Shouldly;
 using Moq.Protected;
+using Azure.Core;
+using Azure.Identity;
 
 namespace ContainerTagRemover.Tests.Services
 {
@@ -15,7 +17,7 @@ namespace ContainerTagRemover.Tests.Services
         {
             _mockHttpMessageHandler = new Mock<HttpMessageHandler>();
             _httpClient = new HttpClient(_mockHttpMessageHandler.Object);
-            _client = new AzureContainerRegistryClient( _httpClient);
+            _client = new AzureContainerRegistryClient(_httpClient);
         }
 
         [Fact]
@@ -75,6 +77,26 @@ namespace ContainerTagRemover.Tests.Services
                 ),
                 ItExpr.IsAny<CancellationToken>()
             );
+        }
+
+        [Fact]
+        public async Task AuthenticateAsync_Should_Authenticate_Using_Environment_Variables()
+        {
+            // Arrange
+            Environment.SetEnvironmentVariable("AZURE_TENANT_ID", "test-tenant-id");
+            Environment.SetEnvironmentVariable("AZURE_CLIENT_ID", "test-client-id");
+            Environment.SetEnvironmentVariable("AZURE_CLIENT_SECRET", "test-client-secret");
+
+            var mockCredential = new Mock<TokenCredential>();
+            var token = new AccessToken("test-token", DateTimeOffset.Now.AddHours(1));
+            mockCredential.Setup(c => c.GetTokenAsync(It.IsAny<TokenRequestContext>(), It.IsAny<CancellationToken>()))
+                          .ReturnsAsync(token);
+
+            // Act
+            await _client.AuthenticateAsync();
+
+            // Assert
+            _client.ShouldNotBeNull();
         }
     }
 }

@@ -39,6 +39,9 @@ namespace ContainerTagRemover
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
+            var registryClient = serviceProvider.GetService<IContainerRegistryClient>();
+            await registryClient.AuthenticateAsync();
+
             var tagRemovalService = serviceProvider.GetService<TagRemovalService>();
             await tagRemovalService.RemoveOldTagsAsync(repository);
         }
