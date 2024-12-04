@@ -19,7 +19,7 @@ namespace ContainerTagRemover.Services
             _httpClient = httpClient;
         }
 
-        public async Task AuthenticateAsync()
+        public async Task AuthenticateAsync(CancellationToken cancellationToken = default)
         {
             _username = Environment.GetEnvironmentVariable("DOCKERHUB_USERNAME");
             _password = Environment.GetEnvironmentVariable("DOCKERHUB_PASSWORD");
