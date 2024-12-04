@@ -22,10 +22,10 @@ jobs:
         dotnet-version: 8.0.x
 
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore src/ContainerTagRemover/ContainerTagRemover.sln
 
     - name: Build solution
-      run: dotnet build --no-restore
+      run: dotnet build src/ContainerTagRemover/ContainerTagRemover.sln --no-restore
 
     - name: Run tests
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test src/ContainerTagRemover/ContainerTagRemover.sln --no-build --verbosity normal
