@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
+using Azure.Core;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using ContainerTagRemover.Interfaces;
@@ -19,7 +21,7 @@ namespace ContainerTagRemover.Services
             _httpClient = httpClient;
         }
 
-        public async Task AuthenticateAsync()
+        public async Task AuthenticateAsync(CancellationToken cancellationToken = default)
         {
             var tenantId = Environment.GetEnvironmentVariable("AZURE_TENANT_ID");
             var clientId = Environment.GetEnvironmentVariable("AZURE_CLIENT_ID");
@@ -30,12 +32,12 @@ namespace ContainerTagRemover.Services
                 throw new InvalidOperationException("Environment variables AZURE_TENANT_ID and AZURE_CLIENT_ID must be set.");
             }
 
-            var credential = string.IsNullOrEmpty(clientSecret)
-                ? new DefaultAzureCredential()
+            TokenCredential credential = string.IsNullOrEmpty(clientSecret)
+                ? (TokenCredential)new DefaultAzureCredential()
                 : new ClientSecretCredential(tenantId, clientId, clientSecret);
 
             var tokenRequestContext = new TokenRequestContext(new[] { "https://management.azure.com/.default" });
-            var token = await credential.GetTokenAsync(tokenRequestContext);
+            var token = await credential.GetTokenAsync(tokenRequestContext, cancellationToken);
             _accessToken = token.Token;
         }
 
