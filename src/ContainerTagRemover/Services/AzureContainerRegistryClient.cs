@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 using ContainerTagRemover.Interfaces;
-using Newtonsoft.Json.Linq;
 
 namespace ContainerTagRemover.Services
 {
@@ -42,9 +42,19 @@ namespace ContainerTagRemover.Services
 
         private static IEnumerable<string> ParseTags(string content)
         {
-            var json = JObject.Parse(content);
-            var tags = json["tags"].ToObject<List<string>>();
-            return tags;
+            using (JsonDocument document = JsonDocument.Parse(content))
+            {
+                JsonElement root = document.RootElement;
+                JsonElement tagsElement = root.GetProperty("tags");
+                var tags = new List<string>();
+
+                foreach (JsonElement tagElement in tagsElement.EnumerateArray())
+                {
+                    tags.Add(tagElement.GetString());
+                }
+
+                return tags;
+            }
         }
     }
 }
