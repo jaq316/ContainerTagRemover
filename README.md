@@ -31,8 +31,8 @@ The configuration file is a JSON file that specifies the number of tags to keep 
 1. Clone the repository:
 
 ```sh
-git clone https://github.com/githubnext/workspace-blank.git
-cd workspace-blank
+git clone https://github.com/jaq316/ContainerTagRemover.git
+cd src/ContainerTagRemover
 ```
 
 2. Build the solution:
