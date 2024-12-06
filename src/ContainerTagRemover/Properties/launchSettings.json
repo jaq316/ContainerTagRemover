@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ContainerTagRemover": {
+      "commandName": "Project",
+      "commandLineArgs": "https://containertagremover.azurecr.io cerbos"
+    }
+  }
+}

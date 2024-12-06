@@ -38,12 +38,14 @@ namespace ContainerTagRemover.Services
             }
         }
 
-        public IEnumerable<string> DetermineTagsToRemove(IEnumerable<string> tags)
+        public IEnumerable<string> DetermineTagsToRemove(IEnumerable<Tag> tags)
         {
             var semverTags = tags
-                .Select(tag => SemVersion.TryParse(tag, out var version) ? version : null)
+                .Select(tag => new { Version = SemVersion.TryParse(tag.Name, out var version) ? version : null, tag.Digest })
                 .Where(version => version != null)
-                .OrderByDescending(version => version, new VersionComparer())
+                .OrderByDescending(tag => tag.Version, new VersionComparer())
+                .GroupBy(tag => tag.Digest)
+                .Select(tg => tg.Select(tag => tag.Version).First())
                 .ToList();
 
             var tagsToKeep = new HashSet<SemVersion>();

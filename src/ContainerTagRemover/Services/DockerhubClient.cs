@@ -11,19 +11,19 @@ namespace ContainerTagRemover.Services
     public class DockerhubClient : IContainerRegistryClient
     {
         private readonly HttpClient _httpClient;
-        private string _username;
-        private string _password;
+        private readonly string registryUrl;
         private string _token;
 
-        public DockerhubClient(HttpClient httpClient)
+        public DockerhubClient(HttpClient httpClient, string registryUrl)
         {
             _httpClient = httpClient;
+            this.registryUrl = registryUrl;
         }
 
         public async Task AuthenticateAsync(CancellationToken cancellationToken = default)
         {
-            _username = Environment.GetEnvironmentVariable("DOCKERHUB_USERNAME");
-            _password = Environment.GetEnvironmentVariable("DOCKERHUB_PASSWORD");
+            string _username = Environment.GetEnvironmentVariable("DOCKERHUB_USERNAME");
+            string _password = Environment.GetEnvironmentVariable("DOCKERHUB_PASSWORD");
 
             if (string.IsNullOrEmpty(_username) || string.IsNullOrEmpty(_password))
             {
@@ -46,9 +46,9 @@ namespace ContainerTagRemover.Services
             _token = jsonDocument.RootElement.GetProperty("token").GetString();
         }
 
-        public async Task<IEnumerable<string>> ListTagsAsync(string image)
+        public async Task<IEnumerable<Tag>> ListTagsAsync(string image)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://hub.docker.com/v2/repositories/{image}/tags");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://hub.docker.com/v2/repositories/{registryUrl}/{image}/tags");
             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _token);
             var response = await _httpClient.SendAsync(request);
 
@@ -64,7 +64,7 @@ namespace ContainerTagRemover.Services
 
         public async Task DeleteTagAsync(string image, string tag)
         {
-            var request = new HttpRequestMessage(HttpMethod.Delete, $"https://hub.docker.com/v2/repositories/{image}/tags/{tag}");
+            var request = new HttpRequestMessage(HttpMethod.Delete, $"https://hub.docker.com/v2/repositories/{registryUrl}/{image}/tags/{tag}");
             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _token);
             var response = await _httpClient.SendAsync(request);
 
@@ -74,17 +74,17 @@ namespace ContainerTagRemover.Services
             }
         }
 
-        private static IEnumerable<string> ParseTags(string content)
+        private static IEnumerable<Tag> ParseTags(string content)
         {
             using (JsonDocument document = JsonDocument.Parse(content))
             {
                 JsonElement root = document.RootElement;
                 JsonElement tagsElement = root.GetProperty("tags");
-                var tags = new List<string>();
+                var tags = new List<Tag>();
 
                 foreach (JsonElement tagElement in tagsElement.EnumerateArray())
                 {
-                    tags.Add(tagElement.GetString());
+                    tags.Add(new(tagElement.GetString(), tagElement.GetString())); // TODO: Get digest
                 }
 
                 return tags;

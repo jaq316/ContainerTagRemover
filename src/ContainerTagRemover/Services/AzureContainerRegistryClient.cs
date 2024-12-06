@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Containers.ContainerRegistry;
 using Azure.Identity;
 using ContainerTagRemover.Interfaces;
@@ -15,7 +15,11 @@ namespace ContainerTagRemover.Services
 
         public AzureContainerRegistryClient(string registryUrl)
         {
-            _client = new ContainerRegistryClient(new Uri(registryUrl), new DefaultAzureCredential());
+            _client = new ContainerRegistryClient(new Uri(registryUrl), new DefaultAzureCredential(includeInteractiveCredentials: true),
+                new ContainerRegistryClientOptions()
+                {
+                    Audience = ContainerRegistryAudience.AzureResourceManagerPublicCloud
+                });
         }
 
         public Task AuthenticateAsync(CancellationToken cancellationToken = default)
@@ -24,21 +28,21 @@ namespace ContainerTagRemover.Services
             return Task.CompletedTask;
         }
 
-        public async Task<IEnumerable<string>> ListTagsAsync(string image)
+        public async Task<IEnumerable<Tag>> ListTagsAsync(string image)
         {
-            var tags = new List<string>();
+            var tags = new List<Tag>();
             var repository = _client.GetRepository(image);
-            await foreach (var tag in repository.GetTagsAsync())
+            foreach (var item in repository.GetAllManifestProperties(ArtifactManifestOrder.LastUpdatedOnDescending))
             {
-                tags.Add(tag.Name);
+                tags.AddRange(item.Tags.Select(t => new Tag(t, item.Digest)));
             }
             return tags;
         }
 
         public async Task DeleteTagAsync(string image, string tag)
         {
-            var repository = _client.GetRepository(image);
-            await repository.DeleteTagAsync(tag);
+            RegistryArtifact tagArtifact = _client.GetArtifact(image, tag);
+            _ = await tagArtifact.DeleteAsync();
         }
     }
 }

@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ContainerTagRemover.Configuration;
 using ContainerTagRemover.Services;
 using ContainerTagRemover.Interfaces;
+using System.Net.Http;
 
 namespace ContainerTagRemover
 {
@@ -14,7 +15,7 @@ namespace ContainerTagRemover
         {
             string registryUrl, image, configFilePath;
 
-            if (args.Length != 3)
+            if (args.Length < 2)
             {
                 Console.WriteLine("Usage: ContainerTagRemover <registry-url> <image> <config-file>");
                 Console.WriteLine("Please enter the missing arguments:");
@@ -32,21 +33,15 @@ namespace ContainerTagRemover
             {
                 registryUrl = args[0];
                 image = args[1];
-                configFilePath = args[2];
+                configFilePath = args.Length > 2 ? args[2] : null;
             }
 
             TagRemovalConfig config;
             try
             {
-                if (string.IsNullOrEmpty(configFilePath))
-                {
-                    config = new TagRemovalConfig { Major = 2, Minor = 2 };
-                }
-                else
-                {
-                    config = TagRemovalConfig.Load(configFilePath);
-                    config.Validate();
-                }
+
+                config = TagRemovalConfig.Load(configFilePath);
+                config.Validate();
             }
             catch (Exception ex)
             {
@@ -73,11 +68,11 @@ namespace ContainerTagRemover
 
             if (registryUrl.Contains("azurecr.io"))
             {
-                services.AddSingleton<IContainerRegistryClient, AzureContainerRegistryClient>();
+                services.AddSingleton<IContainerRegistryClient>(sp => new AzureContainerRegistryClient(registryUrl));
             }
             else if (registryUrl.Contains("dockerhub"))
             {
-                services.AddSingleton<IContainerRegistryClient, DockerhubClient>();
+                services.AddSingleton<IContainerRegistryClient>(sp => new DockerhubClient(sp.GetRequiredService<HttpClient>(), registryUrl));
             }
             else
             {
