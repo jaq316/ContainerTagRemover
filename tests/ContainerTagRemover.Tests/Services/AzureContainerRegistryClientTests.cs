@@ -12,12 +12,14 @@ namespace ContainerTagRemover.Tests.Services
         private readonly Mock<HttpMessageHandler> _mockHttpMessageHandler;
         private readonly HttpClient _httpClient;
         private readonly AzureContainerRegistryClient _client;
+        private readonly Mock<TokenCredential> _mockCredential;
 
         public AzureContainerRegistryClientTests()
         {
             _mockHttpMessageHandler = new Mock<HttpMessageHandler>();
             _httpClient = new HttpClient(_mockHttpMessageHandler.Object);
-            _client = new AzureContainerRegistryClient(_httpClient);
+            _mockCredential = new Mock<TokenCredential>();
+            _client = new AzureContainerRegistryClient(_httpClient, _mockCredential.Object);
         }
 
         [Fact]
@@ -87,9 +89,8 @@ namespace ContainerTagRemover.Tests.Services
             Environment.SetEnvironmentVariable("AZURE_CLIENT_ID", "test-client-id");
             Environment.SetEnvironmentVariable("AZURE_CLIENT_SECRET", "test-client-secret");
 
-            var mockCredential = new Mock<TokenCredential>();
             var token = new AccessToken("test-token", DateTimeOffset.Now.AddHours(1));
-            mockCredential.Setup(c => c.GetTokenAsync(It.IsAny<TokenRequestContext>(), It.IsAny<CancellationToken>()))
+            _mockCredential.Setup(c => c.GetTokenAsync(It.IsAny<TokenRequestContext>(), It.IsAny<CancellationToken>()))
                           .ReturnsAsync(token);
 
             // Act

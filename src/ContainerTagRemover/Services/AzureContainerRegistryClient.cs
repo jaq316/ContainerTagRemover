@@ -14,30 +14,19 @@ namespace ContainerTagRemover.Services
     public class AzureContainerRegistryClient : IContainerRegistryClient
     {
         private readonly HttpClient _httpClient;
+        private readonly TokenCredential _credential;
         private string _accessToken;
 
-        public AzureContainerRegistryClient(HttpClient httpClient)
+        public AzureContainerRegistryClient(HttpClient httpClient, TokenCredential credential)
         {
             _httpClient = httpClient;
+            _credential = credential;
         }
 
         public async Task AuthenticateAsync(CancellationToken cancellationToken = default)
         {
-            var tenantId = Environment.GetEnvironmentVariable("AZURE_TENANT_ID");
-            var clientId = Environment.GetEnvironmentVariable("AZURE_CLIENT_ID");
-            var clientSecret = Environment.GetEnvironmentVariable("AZURE_CLIENT_SECRET");
-
-            if (string.IsNullOrEmpty(tenantId) || string.IsNullOrEmpty(clientId))
-            {
-                throw new InvalidOperationException("Environment variables AZURE_TENANT_ID and AZURE_CLIENT_ID must be set.");
-            }
-
-            TokenCredential credential = string.IsNullOrEmpty(clientSecret)
-                ? (TokenCredential)new DefaultAzureCredential()
-                : new ClientSecretCredential(tenantId, clientId, clientSecret);
-
             var tokenRequestContext = new TokenRequestContext(new[] { "https://management.azure.com/.default" });
-            var token = await credential.GetTokenAsync(tokenRequestContext, cancellationToken);
+            var token = await _credential.GetTokenAsync(tokenRequestContext, cancellationToken);
             _accessToken = token.Token;
         }
 
