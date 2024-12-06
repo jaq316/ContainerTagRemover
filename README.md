@@ -75,10 +75,10 @@ dotnet build
 3. Run the tool:
 
 ```sh
-dotnet run --project src/ContainerTagRemover/ContainerTagRemover.csproj -- <registry> <repository> <config-file>
+dotnet run --project src/ContainerTagRemover/ContainerTagRemover.csproj -- <registry-url> <repository> <config-file>
 ```
 
-Replace `<registry>`, `<repository>`, and `<config-file>` with the appropriate values.
+Replace `<registry-url>`, `<repository>`, and `<config-file>` with the appropriate values.
 
 If the configuration file is not specified, the tool will use the default values: Major: 2, Minor: 2.
 

@@ -12,15 +12,15 @@ namespace ContainerTagRemover
     {
         public static async Task Main(string[] args)
         {
-            string registry, repository, configFilePath;
+            string registryUrl, repository, configFilePath;
 
             if (args.Length != 3)
             {
-                Console.WriteLine("Usage: ContainerTagRemover <registry> <repository> <config-file>");
+                Console.WriteLine("Usage: ContainerTagRemover <registry-url> <repository> <config-file>");
                 Console.WriteLine("Please enter the missing arguments:");
 
-                Console.Write("Registry: ");
-                registry = Console.ReadLine();
+                Console.Write("Registry URL: ");
+                registryUrl = Console.ReadLine();
 
                 Console.Write("Repository: ");
                 repository = Console.ReadLine();
@@ -30,7 +30,7 @@ namespace ContainerTagRemover
             }
             else
             {
-                registry = args[0];
+                registryUrl = args[0];
                 repository = args[1];
                 configFilePath = args[2];
             }
@@ -55,7 +55,7 @@ namespace ContainerTagRemover
             }
 
             var serviceCollection = new ServiceCollection();
-            ConfigureServices(serviceCollection, registry, config);
+            ConfigureServices(serviceCollection, registryUrl, config);
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -66,21 +66,22 @@ namespace ContainerTagRemover
             await tagRemovalService.RemoveOldTagsAsync(repository);
         }
 
-        private static void ConfigureServices(IServiceCollection services, string registry, TagRemovalConfig config)
+        private static void ConfigureServices(IServiceCollection services, string registryUrl, TagRemovalConfig config)
         {
             services.AddSingleton(config);
             services.AddSingleton<TagRemovalService>();
 
-            switch (registry.ToLower())
+            if (registryUrl.Contains("azurecr.io"))
             {
-                case "dockerhub":
-                    services.AddSingleton<IContainerRegistryClient, DockerhubClient>();
-                    break;
-                case "azure":
-                    services.AddSingleton<IContainerRegistryClient, AzureContainerRegistryClient>();
-                    break;
-                default:
-                    throw new ArgumentException($"Unsupported registry: {registry}");
+                services.AddSingleton<IContainerRegistryClient, AzureContainerRegistryClient>();
+            }
+            else if (registryUrl.Contains("dockerhub"))
+            {
+                services.AddSingleton<IContainerRegistryClient, DockerhubClient>();
+            }
+            else
+            {
+                throw new ArgumentException($"Unsupported registry URL: {registryUrl}");
             }
         }
     }
