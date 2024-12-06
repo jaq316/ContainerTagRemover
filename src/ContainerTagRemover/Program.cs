@@ -8,25 +8,45 @@ using ContainerTagRemover.Interfaces;
 
 namespace ContainerTagRemover
 {
-    static class Program
+    public static class Program
     {
-        static async Task Main(string[] args)
+        public static async Task Main(string[] args)
         {
+            string registry, repository, configFilePath;
+
             if (args.Length != 3)
             {
                 Console.WriteLine("Usage: ContainerTagRemover <registry> <repository> <config-file>");
-                return;
-            }
+                Console.WriteLine("Please enter the missing arguments:");
 
-            string registry = args[0];
-            string repository = args[1];
-            string configFilePath = args[2];
+                Console.Write("Registry: ");
+                registry = Console.ReadLine();
+
+                Console.Write("Repository: ");
+                repository = Console.ReadLine();
+
+                Console.Write("Config File Path: ");
+                configFilePath = Console.ReadLine();
+            }
+            else
+            {
+                registry = args[0];
+                repository = args[1];
+                configFilePath = args[2];
+            }
 
             TagRemovalConfig config;
             try
             {
-                config = TagRemovalConfig.Load(configFilePath);
-                config.Validate();
+                if (string.IsNullOrEmpty(configFilePath))
+                {
+                    config = new TagRemovalConfig { Major = 2, Minor = 2 };
+                }
+                else
+                {
+                    config = TagRemovalConfig.Load(configFilePath);
+                    config.Validate();
+                }
             }
             catch (Exception ex)
             {
