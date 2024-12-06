@@ -5,6 +5,8 @@ using Xunit;
 using ContainerTagRemover.DependencyInjection;
 using ContainerTagRemover.Interfaces;
 using ContainerTagRemover.Services;
+using Azure.Core;
+using Azure.Identity;
 
 namespace ContainerTagRemover.Tests.DependencyInjection
 {
@@ -15,6 +17,7 @@ namespace ContainerTagRemover.Tests.DependencyInjection
         {
             // Arrange
             var services = new ServiceCollection();
+            services.AddSingleton<TokenCredential, DefaultAzureCredential>();
 
             // Act
             services.AddContainerTagRemoverServices();
