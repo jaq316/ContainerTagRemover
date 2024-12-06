@@ -13,6 +13,8 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Semver" Version="3.0.0" />
+    <PackageReference Include="Azure.Containers.ContainerRegistry" Version="1.0.0" />
+    <PackageReference Include="Docker.DotNet" Version="3.125.5" />
   </ItemGroup>
 
 </Project>

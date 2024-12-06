@@ -27,14 +27,14 @@ namespace ContainerTagRemover.Services
             _config = config;
         }
 
-        public async Task RemoveOldTagsAsync(string repository)
+        public async Task RemoveOldTagsAsync(string image)
         {
-            var tags = await _registryClient.ListTagsAsync(repository);
+            var tags = await _registryClient.ListTagsAsync(image);
             var tagsToRemove = DetermineTagsToRemove(tags);
 
             foreach (var tag in tagsToRemove)
             {
-                await _registryClient.DeleteTagAsync(repository, tag);
+                await _registryClient.DeleteTagAsync(image, tag);
             }
         }
 

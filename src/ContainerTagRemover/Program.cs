@@ -12,18 +12,18 @@ namespace ContainerTagRemover
     {
         public static async Task Main(string[] args)
         {
-            string registryUrl, repository, configFilePath;
+            string registryUrl, image, configFilePath;
 
             if (args.Length != 3)
             {
-                Console.WriteLine("Usage: ContainerTagRemover <registry-url> <repository> <config-file>");
+                Console.WriteLine("Usage: ContainerTagRemover <registry-url> <image> <config-file>");
                 Console.WriteLine("Please enter the missing arguments:");
 
                 Console.Write("Registry URL: ");
                 registryUrl = Console.ReadLine();
 
-                Console.Write("Repository: ");
-                repository = Console.ReadLine();
+                Console.Write("Image: ");
+                image = Console.ReadLine();
 
                 Console.Write("Config File Path: ");
                 configFilePath = Console.ReadLine();
@@ -31,7 +31,7 @@ namespace ContainerTagRemover
             else
             {
                 registryUrl = args[0];
-                repository = args[1];
+                image = args[1];
                 configFilePath = args[2];
             }
 
@@ -63,7 +63,7 @@ namespace ContainerTagRemover
             await registryClient.AuthenticateAsync();
 
             var tagRemovalService = serviceProvider.GetService<TagRemovalService>();
-            await tagRemovalService.RemoveOldTagsAsync(repository);
+            await tagRemovalService.RemoveOldTagsAsync(image);
         }
 
         private static void ConfigureServices(IServiceCollection services, string registryUrl, TagRemovalConfig config)

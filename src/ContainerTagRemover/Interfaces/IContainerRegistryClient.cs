@@ -7,7 +7,7 @@ namespace ContainerTagRemover.Interfaces
     public interface IContainerRegistryClient
     {
         Task AuthenticateAsync(CancellationToken cancellationToken = default);
-        Task<IEnumerable<string>> ListTagsAsync(string repository);
-        Task DeleteTagAsync(string repository, string tag);
+        Task<IEnumerable<string>> ListTagsAsync(string image);
+        Task DeleteTagAsync(string image, string tag);
     }
 }

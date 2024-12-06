@@ -46,15 +46,15 @@ namespace ContainerTagRemover.Services
             _token = jsonDocument.RootElement.GetProperty("token").GetString();
         }
 
-        public async Task<IEnumerable<string>> ListTagsAsync(string repository)
+        public async Task<IEnumerable<string>> ListTagsAsync(string image)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://hub.docker.com/v2/repositories/{repository}/tags");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://hub.docker.com/v2/repositories/{image}/tags");
             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _token);
             var response = await _httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new InvalidOperationException($"Failed to list tags for repository {repository}: {response.ReasonPhrase}");
+                throw new InvalidOperationException($"Failed to list tags for image {image}: {response.ReasonPhrase}");
             }
 
             var content = await response.Content.ReadAsStringAsync();
@@ -62,15 +62,15 @@ namespace ContainerTagRemover.Services
             return tags;
         }
 
-        public async Task DeleteTagAsync(string repository, string tag)
+        public async Task DeleteTagAsync(string image, string tag)
         {
-            var request = new HttpRequestMessage(HttpMethod.Delete, $"https://hub.docker.com/v2/repositories/{repository}/tags/{tag}");
+            var request = new HttpRequestMessage(HttpMethod.Delete, $"https://hub.docker.com/v2/repositories/{image}/tags/{tag}");
             request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _token);
             var response = await _httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new InvalidOperationException($"Failed to delete tag {tag} for repository {repository}: {response.ReasonPhrase}");
+                throw new InvalidOperationException($"Failed to delete tag {tag} for image {image}: {response.ReasonPhrase}");
             }
         }
 
