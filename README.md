@@ -25,6 +25,8 @@ The configuration file is a JSON file that specifies the number of tags to keep 
 }
 ```
 
+If the configuration file is not specified, the tool will use the default values: Major: 2, Minor: 2.
+
 ## Environment Variables
 
 To authenticate with Dockerhub and Azure Container Registry, you need to set the following environment variables:
@@ -77,6 +79,10 @@ dotnet run --project src/ContainerTagRemover/ContainerTagRemover.csproj -- <regi
 ```
 
 Replace `<registry>`, `<repository>`, and `<config-file>` with the appropriate values.
+
+If the configuration file is not specified, the tool will use the default values: Major: 2, Minor: 2.
+
+If any of the required arguments are not provided, the tool will prompt you to enter them during execution.
 
 ## Running the Tests
 
