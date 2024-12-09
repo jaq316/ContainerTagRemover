@@ -15,43 +15,31 @@ namespace ContainerTagRemover.Services
             return x.CompareSortOrderTo(y);
         }
     }
-    public class TagRemovalService
+    public class TagRemovalService(IContainerRegistryClient registryClient, TagRemovalConfig config)
     {
-
-        private readonly IContainerRegistryClient _registryClient;
-        private readonly TagRemovalConfig _config;
-
-        public TagRemovalService(IContainerRegistryClient registryClient, TagRemovalConfig config)
-        {
-            _registryClient = registryClient;
-            _config = config;
-        }
-
         public async Task RemoveOldTagsAsync(string image)
         {
-            var tags = await _registryClient.ListTagsAsync(image);
-            var tagsToRemove = DetermineTagsToRemove(tags);
+            var tags = await registryClient.ListTagsAsync(image);
+            var tagsToRemove = DetermineTagsToRemove(tags.Select(t => t.Name));
 
             foreach (var tag in tagsToRemove)
             {
-                await _registryClient.DeleteTagAsync(image, tag);
+                await registryClient.DeleteTagAsync(image, tag);
             }
         }
 
-        public IEnumerable<string> DetermineTagsToRemove(IEnumerable<Tag> tags)
+        public IEnumerable<string> DetermineTagsToRemove(IEnumerable<string> tags)
         {
             var semverTags = tags
-                .Select(tag => new { Version = SemVersion.TryParse(tag.Name, out var version) ? version : null, tag.Digest })
+                .Select(tag => SemVersion.TryParse(tag, out var version) ? version : null)
                 .Where(version => version != null)
-                .OrderByDescending(tag => tag.Version, new VersionComparer())
-                .GroupBy(tag => tag.Digest)
-                .Select(tg => tg.Select(tag => tag.Version).First())
+                .OrderByDescending(version => version, new VersionComparer())
                 .ToList();
 
             var tagsToKeep = new HashSet<SemVersion>();
 
-            KeepLatestVersions(semverTags, tagsToKeep, _config.Major, v => v.Major);
-            KeepLatestVersions(semverTags, tagsToKeep, _config.Minor, v => (v.Major, v.Minor));
+            KeepLatestVersions(semverTags, tagsToKeep, config.Major, v => v.Major);
+            KeepLatestVersions(semverTags, tagsToKeep, config.Minor, v => (v.Major, v.Minor));
 
             return semverTags.Where(v => !tagsToKeep.Any(t => t.ToString() == v.ToString())).Select(v => v.ToString());
         }

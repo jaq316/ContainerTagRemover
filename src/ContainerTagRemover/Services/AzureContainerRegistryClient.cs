@@ -42,7 +42,7 @@ namespace ContainerTagRemover.Services
         public async Task DeleteTagAsync(string image, string tag)
         {
             RegistryArtifact tagArtifact = _client.GetArtifact(image, tag);
-            _ = await tagArtifact.DeleteAsync();
+            _ = await tagArtifact.DeleteTagAsync(tag);
         }
     }
 }
