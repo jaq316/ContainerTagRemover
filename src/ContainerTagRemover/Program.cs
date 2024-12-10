@@ -59,6 +59,22 @@ namespace ContainerTagRemover
 
             var tagRemovalService = serviceProvider.GetService<TagRemovalService>();
             await tagRemovalService.RemoveOldTagsAsync(image);
+
+            var removedTags = tagRemovalService.GetRemovedTags();
+            Console.WriteLine("Removed Tags:");
+            foreach (var tag in removedTags)
+            {
+                Console.WriteLine(tag);
+            }
+
+            var keptTags = tagRemovalService.GetKeptTags();
+            Console.WriteLine("Kept Tags:");
+            foreach (var tag in keptTags)
+            {
+                Console.WriteLine(tag);
+            }
+
+            Console.WriteLine($"Summary: Removed {removedTags.Count} tags, Kept {keptTags.Count} tags.");
         }
 
         private static void ConfigureServices(IServiceCollection services, string registryUrl, TagRemovalConfig config)

@@ -175,5 +175,61 @@ namespace ContainerTagRemover.Tests.Services
             result.ShouldContain("2.1.4");
             result.ShouldContain("2.1.5");
         }
+
+        [Fact]
+        public void GetRemovedTags_Should_Return_Correct_List()
+        {
+            // Arrange
+            var repository = "test-repo";
+            var tags = new List<Tag> {
+                new Tag("1.0.0", "digest1"),
+                new Tag("1.0.1", "digest2"),
+                new Tag("1.0.2", "digest3"),
+                new Tag("1.0.3", "digest4"),
+                new Tag("1.0.4", "digest5"),
+                new Tag("1.0.5", "digest6"),
+                new Tag("1.0.6", "digest7"),
+                new Tag("1.0.7", "digest8"),
+            };
+            _mockRegistryClient.Setup(x => x.ListTagsAsync(repository)).ReturnsAsync(tags);
+
+            // Act
+            _tagRemovalService.RemoveOldTagsAsync(repository).Wait();
+            var removedTags = _tagRemovalService.GetRemovedTags();
+
+            // Assert
+            removedTags.ShouldContain("1.0.0");
+            removedTags.ShouldContain("1.0.1");
+            removedTags.ShouldContain("1.0.2");
+            removedTags.ShouldContain("1.0.3");
+            removedTags.ShouldContain("1.0.4");
+            removedTags.ShouldContain("1.0.5");
+        }
+
+        [Fact]
+        public void GetKeptTags_Should_Return_Correct_List()
+        {
+            // Arrange
+            var repository = "test-repo";
+            var tags = new List<Tag> {
+                new Tag("1.0.0", "digest1"),
+                new Tag("1.0.1", "digest2"),
+                new Tag("1.0.2", "digest3"),
+                new Tag("1.0.3", "digest4"),
+                new Tag("1.0.4", "digest5"),
+                new Tag("1.0.5", "digest6"),
+                new Tag("1.0.6", "digest7"),
+                new Tag("1.0.7", "digest8"),
+            };
+            _mockRegistryClient.Setup(x => x.ListTagsAsync(repository)).ReturnsAsync(tags);
+
+            // Act
+            _tagRemovalService.RemoveOldTagsAsync(repository).Wait();
+            var keptTags = _tagRemovalService.GetKeptTags();
+
+            // Assert
+            keptTags.ShouldContain("1.0.6");
+            keptTags.ShouldContain("1.0.7");
+        }
     }
 }

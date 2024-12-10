@@ -17,6 +17,9 @@ namespace ContainerTagRemover.Services
     }
     public class TagRemovalService(IContainerRegistryClient registryClient, TagRemovalConfig config)
     {
+        private readonly List<string> removedTags = new List<string>();
+        private readonly List<string> keptTags = new List<string>();
+
         public async Task RemoveOldTagsAsync(string image)
         {
             var tags = await registryClient.ListTagsAsync(image);
@@ -25,7 +28,11 @@ namespace ContainerTagRemover.Services
             foreach (var tag in tagsToRemove)
             {
                 await registryClient.DeleteTagAsync(image, tag);
+                removedTags.Add(tag);
             }
+
+            var tagsToKeep = tags.Select(t => t.Name).Except(tagsToRemove);
+            keptTags.AddRange(tagsToKeep);
         }
 
         public IEnumerable<string> DetermineTagsToRemove(IEnumerable<string> tags)
@@ -52,6 +59,16 @@ namespace ContainerTagRemover.Services
             {
                 tagsToKeep.UnionWith(group.Take(count));
             }
+        }
+
+        public List<string> GetRemovedTags()
+        {
+            return removedTags;
+        }
+
+        public List<string> GetKeptTags()
+        {
+            return keptTags;
         }
     }
 }
