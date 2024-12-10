@@ -19,5 +19,9 @@
     <PackageReference Include="Azure.Containers.ContainerRegistry" Version="1.0.0" />
     <PackageReference Include="Docker.DotNet" Version="3.125.5" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <InternalsVisibleTo Include="ContainerTagRemover.Tests" />
+  </ItemGroup>
 
 </Project>

@@ -11,7 +11,7 @@ namespace ContainerTagRemover.Configuration
 
         public static TagRemovalConfig Load(string filePath)
         {
-            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
+            if (string.IsNullOrEmpty(filePath))
             {
                 return new TagRemovalConfig { Major = 2, Minor = 2 };
             }

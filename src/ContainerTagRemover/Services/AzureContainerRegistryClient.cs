@@ -13,6 +13,11 @@ namespace ContainerTagRemover.Services
     {
         private readonly ContainerRegistryClient _client;
 
+        internal AzureContainerRegistryClient(ContainerRegistryClient client)
+        {
+            _client = client;
+        }
+
         public AzureContainerRegistryClient(string registryUrl)
         {
             _client = new ContainerRegistryClient(new Uri(registryUrl), new DefaultAzureCredential(includeInteractiveCredentials: true),

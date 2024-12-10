@@ -28,20 +28,6 @@ namespace ContainerTagRemover.Tests.Configuration
         }
 
         [Fact]
-        public void LoadFromFile_ShouldReturnDefaultValues_WhenFileDoesNotExist()
-        {
-            // Arrange
-            string nonExistentFilePath = "nonexistent.json";
-
-            // Act
-            TagRemovalConfig config = TagRemovalConfig.Load(nonExistentFilePath);
-
-            // Assert
-            config.Major.ShouldBe(2);
-            config.Minor.ShouldBe(2);
-        }
-
-        [Fact]
         public void LoadFromFile_ShouldReturnDefaultValues_WhenFilePathIsNotSpecified()
         {
             // Act

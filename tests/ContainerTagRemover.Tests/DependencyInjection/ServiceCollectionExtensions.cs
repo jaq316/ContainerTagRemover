@@ -11,7 +11,7 @@ namespace ContainerTagRemover.DependencyInjection
         {
             services.AddHttpClient();
             services.AddSingleton<IContainerRegistryClient, DockerhubClient>();
-            services.AddSingleton<IContainerRegistryClient, AzureContainerRegistryClient>();
+            services.AddSingleton<IContainerRegistryClient, AzureContainerRegistryClient>(sp => new AzureContainerRegistryClient("https://test.azurecr.io"));
             services.AddSingleton<TagRemovalService>();
             services.AddSingleton((s) => new TagRemovalConfig()
             {

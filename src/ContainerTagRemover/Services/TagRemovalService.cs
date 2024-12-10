@@ -20,7 +20,7 @@ namespace ContainerTagRemover.Services
         private readonly List<string> removedTags = new List<string>();
         private readonly List<string> keptTags = new List<string>();
 
-        public async Task RemoveOldTagsAsync(string image)
+        public virtual async Task RemoveOldTagsAsync(string image)
         {
             var tags = await registryClient.ListTagsAsync(image);
             var tagsToRemove = DetermineTagsToRemove(tags.Select(t => t.Name));
@@ -61,12 +61,12 @@ namespace ContainerTagRemover.Services
             }
         }
 
-        public List<string> GetRemovedTags()
+        public virtual List<string> GetRemovedTags()
         {
             return removedTags;
         }
 
-        public List<string> GetKeptTags()
+        public virtual List<string> GetKeptTags()
         {
             return keptTags;
         }
