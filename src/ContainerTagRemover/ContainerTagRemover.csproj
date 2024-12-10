@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -7,6 +7,10 @@
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>containertagremover</ToolCommandName>
     <PackageOutputPath>./nupkg</PackageOutputPath>
+    <Title>ContainerTagRemover</Title>
+    <Authors>jaq316</Authors>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>docker;tags;cleanup</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,6 +26,13 @@
   
   <ItemGroup>
     <InternalsVisibleTo Include="ContainerTagRemover.Tests" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
