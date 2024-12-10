@@ -29,3 +29,9 @@ jobs:
 
     - name: Run tests
       run: dotnet test src/ContainerTagRemover/ContainerTagRemover.sln --no-build --verbosity normal
+
+    - name: Package tool
+      run: dotnet pack src/ContainerTagRemover/ContainerTagRemover.csproj --output ./nupkg
+
+    - name: Publish tool
+      run: dotnet nuget push ./nupkg/*.nupkg --source <your-nuget-source> --api-key <your-api-key>

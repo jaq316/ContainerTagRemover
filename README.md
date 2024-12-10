@@ -97,3 +97,25 @@ cd tests/ContainerTagRemover.Tests
 ```sh
 dotnet test
 ```
+
+## Installing the Tool as a .NET Global Tool
+
+To install the Container Tag Remover as a .NET global tool, use the following command:
+
+```sh
+dotnet tool install --global --add-source ./nupkg containertagremover
+```
+
+## Using the Tool as a .NET Global Tool
+
+Once installed, you can use the tool from any directory by running:
+
+```sh
+containertagremover <registry-url> <image> <config-file>
+```
+
+Replace `<registry-url>`, `<image>`, and `<config-file>` with the appropriate values.
+
+If the configuration file is not specified, the tool will use the default values: Major: 2, Minor: 2.
+
+If any of the required arguments are not provided, the tool will prompt you to enter them during execution.
