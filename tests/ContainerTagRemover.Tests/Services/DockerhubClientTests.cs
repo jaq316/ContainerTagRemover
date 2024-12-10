@@ -2,6 +2,7 @@ using ContainerTagRemover.Services;
 using Moq;
 using Shouldly;
 using Moq.Protected;
+using ContainerTagRemover.Interfaces;
 
 namespace ContainerTagRemover.Tests.Services
 {
@@ -15,9 +16,8 @@ namespace ContainerTagRemover.Tests.Services
         {
             _mockHttpMessageHandler = new Mock<HttpMessageHandler>();
             _httpClient = new HttpClient(_mockHttpMessageHandler.Object);
-            _dockerhubClient = new DockerhubClient(_httpClient);
+            _dockerhubClient = new DockerhubClient(_httpClient, "test-repo");
         }
-
 
         [Fact]
         public async Task ListTagsAsync_Should_Return_Tags()
@@ -42,7 +42,9 @@ namespace ContainerTagRemover.Tests.Services
             var tags = await _dockerhubClient.ListTagsAsync(repository);
 
             // Assert
-            tags.ShouldBe(new List<string> { "v1.0.0", "v1.0.1" });
+            tags.ShouldBeOfType<List<Tag>>();
+            tags.ShouldContain(t => t.Name == "v1.0.0");
+            tags.ShouldContain(t => t.Name == "v1.0.1");
         }
 
         [Fact]

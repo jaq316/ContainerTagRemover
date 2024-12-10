@@ -23,7 +23,6 @@ namespace ContainerTagRemover.Tests.DependencyInjection
             services.AddContainerTagRemoverServices();
             var serviceProvider = services.BuildServiceProvider();
 
-
             // Assert
             var dockerhubClient = serviceProvider.GetService<IContainerRegistryClient>();
             var azureContainerRegistryClient = serviceProvider.GetService<IContainerRegistryClient>();
