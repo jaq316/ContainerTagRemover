@@ -29,3 +29,10 @@ jobs:
 
     - name: Run tests
       run: dotnet test src/ContainerTagRemover/ContainerTagRemover.sln --no-build --verbosity normal
+
+    - name: Package tool
+      run: dotnet pack src/ContainerTagRemover/ContainerTagRemover.csproj --output ./nupkg
+
+    - name: Publish tool
+      if: github.event_name != 'pull_request'
+      run: dotnet nuget push ./nupkg/*.nupkg --source nuget.org --api-key ${{ secrets.NUGET_API_KEY }}

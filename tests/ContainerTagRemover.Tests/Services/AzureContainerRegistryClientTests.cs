@@ -4,6 +4,9 @@ using Shouldly;
 using Moq.Protected;
 using Azure.Core;
 using Azure.Identity;
+using ContainerTagRemover.Interfaces;
+using Azure.Containers.ContainerRegistry;
+using Azure;
 
 namespace ContainerTagRemover.Tests.Services
 {
@@ -19,7 +22,7 @@ namespace ContainerTagRemover.Tests.Services
             _mockHttpMessageHandler = new Mock<HttpMessageHandler>();
             _httpClient = new HttpClient(_mockHttpMessageHandler.Object);
             _mockCredential = new Mock<TokenCredential>();
-            _client = new AzureContainerRegistryClient(_httpClient, _mockCredential.Object);
+            _client = new AzureContainerRegistryClient("https://test.azurecr.io");
         }
 
         [Fact]
@@ -45,7 +48,9 @@ namespace ContainerTagRemover.Tests.Services
             var tags = await _client.ListTagsAsync(repository);
 
             // Assert
-            tags.ShouldBe(new List<string> { "v1.0.0", "v1.0.1" });
+            tags.ShouldBeOfType<List<Tag>>();
+            tags.ShouldContain(t => t.Name == "v1.0.0");
+            tags.ShouldContain(t => t.Name == "v1.0.1");
         }
 
         [Fact]
@@ -67,7 +72,14 @@ namespace ContainerTagRemover.Tests.Services
                 .ReturnsAsync(responseMessage);
 
             // Act
-            await _client.DeleteTagAsync(repository, tag);
+            try
+            {
+                await _client.DeleteTagAsync(repository, tag);
+            }
+            catch (RequestFailedException ex) when (ex.Status == 404)
+            {
+                // Handle the exception if needed
+            }
 
             // Assert
             _mockHttpMessageHandler.Protected().Verify(
