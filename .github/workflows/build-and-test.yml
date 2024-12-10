@@ -41,6 +41,12 @@ jobs:
     - name: Package tool
       run: dotnet pack src/ContainerTagRemover/ContainerTagRemover.csproj --output ./nupkg
 
+    - name: Publish .nupkg as artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: nupkg
+        path: ./nupkg/*.nupkg
+
     - name: Publish tool
       if: github.event_name != 'pull_request'
       run: dotnet nuget push ./nupkg/*.nupkg --source nuget.org --api-key ${{ secrets.NUGET_API_KEY }}

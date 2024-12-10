@@ -6,7 +6,6 @@
     <RootNamespace>ContainerTagRemover</RootNamespace>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>containertagremover</ToolCommandName>
-    <PackageOutputPath>./nupkg</PackageOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
