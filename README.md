@@ -119,3 +119,21 @@ Replace `<registry-url>`, `<image>`, and `<config-file>` with the appropriate va
 If the configuration file is not specified, the tool will use the default values: Major: 2, Minor: 2.
 
 If any of the required arguments are not provided, the tool will prompt you to enter them during execution.
+
+## GitVersion and Release Generation
+
+This project uses GitVersion to generate release versions. GitVersion is a tool that generates version numbers based on your Git history. It follows Semantic Versioning (SemVer) principles and can be configured to suit your versioning strategy.
+
+### Release Generation Process
+
+1. Whenever the main branch is updated, the GitHub workflow will trigger the release generation process.
+2. GitVersion will be used to determine the version number based on the commit history.
+3. A new release will be created with the generated version number.
+
+### Configuration
+
+The GitVersion configuration file (`gitversion.yml`) is included in the repository and can be customized to fit your versioning strategy. For more information on configuring GitVersion, refer to the [GitVersion documentation](https://gitversion.net/docs/).
+
+### GitHub Workflow
+
+The GitHub workflow file (`.github/workflows/build-and-test.yml`) has been updated to include steps for installing and using GitVersion to generate release versions. The workflow will automatically create a new release whenever the main branch is updated.

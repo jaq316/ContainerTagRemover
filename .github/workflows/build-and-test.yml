@@ -36,3 +36,20 @@ jobs:
     - name: Publish tool
       if: github.event_name != 'pull_request'
       run: dotnet nuget push ./nupkg/*.nupkg --source nuget.org --api-key ${{ secrets.NUGET_API_KEY }}
+
+    - name: Install GitVersion
+      run: dotnet tool install -g GitVersion.Tool
+
+    - name: Use GitVersion to generate version
+      run: gitversion /output json /showvariable FullSemVer
+
+    - name: Create GitHub release
+      if: github.event_name != 'pull_request'
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.gitversion.outputs.FullSemVer }}
+        release_name: Release ${{ steps.gitversion.outputs.FullSemVer }}
+        draft: false
+        prerelease: false
