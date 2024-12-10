@@ -75,10 +75,10 @@ dotnet build
 3. Run the tool:
 
 ```sh
-dotnet run --project src/ContainerTagRemover/ContainerTagRemover.csproj -- <registry-url> <image> <config-file>
+dotnet run --project src/ContainerTagRemover/ContainerTagRemover.csproj -- <registry-url> <image> <config-file> [--output-file <output-file>]
 ```
 
-Replace `<registry-url>`, `<image>`, and `<config-file>` with the appropriate values.
+Replace `<registry-url>`, `<image>`, and `<config-file>` with the appropriate values. Optionally, specify `<output-file>` to output the list of removed and kept tags to a JSON file.
 
 If the configuration file is not specified, the tool will use the default values: Major: 2, Minor: 2.
 
@@ -111,10 +111,10 @@ dotnet tool install --global --add-source ./nupkg containertagremover
 Once installed, you can use the tool from any directory by running:
 
 ```sh
-containertagremover <registry-url> <image> <config-file>
+containertagremover <registry-url> <image> <config-file> [--output-file <output-file>]
 ```
 
-Replace `<registry-url>`, `<image>`, and `<config-file>` with the appropriate values.
+Replace `<registry-url>`, `<image>`, and `<config-file>` with the appropriate values. Optionally, specify `<output-file>` to output the list of removed and kept tags to a JSON file.
 
 If the configuration file is not specified, the tool will use the default values: Major: 2, Minor: 2.
 
