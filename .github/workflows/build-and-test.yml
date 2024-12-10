@@ -27,7 +27,7 @@ jobs:
       run: dotnet tool install -g GitVersion.Tool
 
     - name: Use GitVersion to generate version
-      run: gitversion /output json /showvariable FullSemVer
+      run: dotnet-gitversion /output json /showvariable FullSemVer
 
     - name: Restore dependencies
       run: dotnet restore src/ContainerTagRemover/ContainerTagRemover.sln
