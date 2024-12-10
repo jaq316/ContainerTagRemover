@@ -6,6 +6,7 @@ using ContainerTagRemover.Configuration;
 using ContainerTagRemover.Services;
 using ContainerTagRemover.Interfaces;
 using System.Net.Http;
+using System.Text.Json;
 
 namespace ContainerTagRemover
 {
@@ -13,11 +14,11 @@ namespace ContainerTagRemover
     {
         public static async Task Main(string[] args)
         {
-            string registryUrl, image, configFilePath;
+            string registryUrl, image, configFilePath, outputFilePath = null;
 
             if (args.Length < 2)
             {
-                Console.WriteLine("Usage: ContainerTagRemover <registry-url> <image> <config-file>");
+                Console.WriteLine("Usage: ContainerTagRemover <registry-url> <image> <config-file> [--output-file <output-file>]");
                 Console.WriteLine("Please enter the missing arguments:");
 
                 Console.Write("Registry URL: ");
@@ -34,6 +35,15 @@ namespace ContainerTagRemover
                 registryUrl = args[0];
                 image = args[1];
                 configFilePath = args.Length > 2 ? args[2] : null;
+
+                for (int i = 3; i < args.Length; i++)
+                {
+                    if (args[i] == "--output-file" && i + 1 < args.Length)
+                    {
+                        outputFilePath = args[i + 1];
+                        break;
+                    }
+                }
             }
 
             TagRemovalConfig config;
@@ -75,6 +85,26 @@ namespace ContainerTagRemover
             }
 
             Console.WriteLine($"Summary: Removed {removedTags.Count} tags, Kept {keptTags.Count} tags.");
+
+            if (!string.IsNullOrEmpty(outputFilePath))
+            {
+                var output = new
+                {
+                    RemovedTags = removedTags,
+                    KeptTags = keptTags
+                };
+
+                try
+                {
+                    string jsonOutput = JsonSerializer.Serialize(output, new JsonSerializerOptions { WriteIndented = true });
+                    await File.WriteAllTextAsync(outputFilePath, jsonOutput);
+                    Console.WriteLine($"Output written to {outputFilePath}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error writing to output file: {ex.Message}");
+                }
+            }
         }
 
         private static void ConfigureServices(IServiceCollection services, string registryUrl, TagRemovalConfig config)
