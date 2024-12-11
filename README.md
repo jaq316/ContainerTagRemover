@@ -57,25 +57,20 @@ export AZURE_CLIENT_ID=your-client-id
 export AZURE_CLIENT_SECRET=your-client-secret
 ```
 
-## Building and Running the Tool
+## Running the Tool
 
-1. Clone the repository:
+To run the Container Tag Remover tool, follow these steps:
+
+1. Install the tool as a .NET global tool:
 
 ```sh
-git clone https://github.com/jaq316/ContainerTagRemover.git
-cd src/ContainerTagRemover
+dotnet tool install --global ContainerTagRemover
 ```
 
-2. Build the solution:
+2. Run the tool using the following command:
 
 ```sh
-dotnet build
-```
-
-3. Run the tool:
-
-```sh
-dotnet run --project src/ContainerTagRemover/ContainerTagRemover.csproj -- <registry-url> <image> <config-file> [--output-file <output-file>]
+containertagremover <registry-url> <image> <config-file> [--output-file <output-file>]
 ```
 
 Replace `<registry-url>`, `<image>`, and `<config-file>` with the appropriate values. Optionally, specify `<output-file>` to output the list of removed and kept tags to a JSON file.
@@ -83,17 +78,3 @@ Replace `<registry-url>`, `<image>`, and `<config-file>` with the appropriate va
 If the configuration file is not specified, the tool will use the default values: Major: 2, Minor: 2.
 
 If any of the required arguments are not provided, the tool will prompt you to enter them during execution.
-
-## Running the Tests
-
-1. Navigate to the test project directory:
-
-```sh
-cd tests/ContainerTagRemover.Tests
-```
-
-2. Run the tests:
-
-```sh
-dotnet test
-```
