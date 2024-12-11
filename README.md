@@ -29,21 +29,7 @@ If the configuration file is not specified, the tool will use the default values
 
 ## Environment Variables
 
-To authenticate with Dockerhub and Azure Container Registry, you need to set the following environment variables:
-
-### Dockerhub
-
-* `DOCKERHUB_USERNAME`: Your Dockerhub username.
-* `DOCKERHUB_PASSWORD`: Your Dockerhub password.
-
-Note: Dockerhub implementation is experimental.
-
-Example:
-
-```sh
-export DOCKERHUB_USERNAME=your-username
-export DOCKERHUB_PASSWORD=your-password
-```
+To authenticate with Azure Container Registry and Dockerhub, you need to set the following environment variables:
 
 ### Azure Container Registry
 
@@ -57,6 +43,20 @@ Example:
 export AZURE_TENANT_ID=your-tenant-id
 export AZURE_CLIENT_ID=your-client-id
 export AZURE_CLIENT_SECRET=your-client-secret
+```
+
+### Dockerhub
+
+* `DOCKERHUB_USERNAME`: Your Dockerhub username.
+* `DOCKERHUB_PASSWORD`: Your Dockerhub password.
+
+Note: Dockerhub implementation is experimental.
+
+Example:
+
+```sh
+export DOCKERHUB_USERNAME=your-username
+export DOCKERHUB_PASSWORD=your-password
 ```
 
 ## Running the Tool
