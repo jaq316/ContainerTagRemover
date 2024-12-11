@@ -57,58 +57,17 @@ export AZURE_CLIENT_ID=your-client-id
 export AZURE_CLIENT_SECRET=your-client-secret
 ```
 
-## Building and Running the Tool
+## Running the Tool
 
-1. Clone the repository:
+To run the Container Tag Remover tool, follow these steps:
 
-```sh
-git clone https://github.com/jaq316/ContainerTagRemover.git
-cd src/ContainerTagRemover
-```
-
-2. Build the solution:
+1. Install the tool as a .NET global tool:
 
 ```sh
-dotnet build
+dotnet tool install --global ContainerTagRemover
 ```
 
-3. Run the tool:
-
-```sh
-dotnet run --project src/ContainerTagRemover/ContainerTagRemover.csproj -- <registry-url> <image> <config-file> [--output-file <output-file>]
-```
-
-Replace `<registry-url>`, `<image>`, and `<config-file>` with the appropriate values. Optionally, specify `<output-file>` to output the list of removed and kept tags to a JSON file.
-
-If the configuration file is not specified, the tool will use the default values: Major: 2, Minor: 2.
-
-If any of the required arguments are not provided, the tool will prompt you to enter them during execution.
-
-## Running the Tests
-
-1. Navigate to the test project directory:
-
-```sh
-cd tests/ContainerTagRemover.Tests
-```
-
-2. Run the tests:
-
-```sh
-dotnet test
-```
-
-## Installing the Tool as a .NET Global Tool
-
-To install the Container Tag Remover as a .NET global tool, use the following command:
-
-```sh
-dotnet tool install --global --add-source ./nupkg containertagremover
-```
-
-## Using the Tool as a .NET Global Tool
-
-Once installed, you can use the tool from any directory by running:
+2. Run the tool using the following command:
 
 ```sh
 containertagremover <registry-url> <image> <config-file> [--output-file <output-file>]
@@ -119,25 +78,3 @@ Replace `<registry-url>`, `<image>`, and `<config-file>` with the appropriate va
 If the configuration file is not specified, the tool will use the default values: Major: 2, Minor: 2.
 
 If any of the required arguments are not provided, the tool will prompt you to enter them during execution.
-
-## GitVersion and Release Generation
-
-This project uses GitVersion to generate release versions. GitVersion is a tool that generates version numbers based on your Git history. It follows Semantic Versioning (SemVer) principles and can be configured to suit your versioning strategy.
-
-## GitHub Release Generation
-
-This project now uses the `actions/create-release@v1` action to create GitHub Releases. This action helps you manage your GitHub releases by automating the creation and updating of release notes.
-
-### Release Generation Process
-
-1. Whenever the main branch is updated, the GitHub workflow will trigger the release generation process.
-2. GitVersion will be used to determine the version number based on the commit history.
-3. The `actions/create-release@v1` action will be used to create a new release with the generated version number.
-
-### Configuration
-
-The configuration for the `actions/create-release@v1` action is included in the GitHub workflow file and can be customized to fit your release management strategy. For more information on configuring the `actions/create-release@v1` action, refer to the [GitHub Actions documentation](https://github.com/actions/create-release).
-
-### GitHub Workflow
-
-The GitHub workflow file (`.github/workflows/build-and-test.yml`) has been updated to include steps for installing and using the `actions/create-release@v1` action to generate release versions. The workflow will automatically create a new release whenever the main branch is updated. The `Create GitHub release` step now uses `actions/create-release@v1` to create the release.
