@@ -12,6 +12,8 @@ containertagremover <registry-url> <image> <config-file> [--output-file <output-
 
 Replace `<registry-url>`, `<image>`, and `<config-file>` with the appropriate values. Optionally, specify `<output-file>` to output the list of removed and kept tags to a JSON file.
 
+Note: DockerHub implementation is experimental.
+
 3. The tool will prompt you to enter any missing arguments during execution.
 
 4. The tool will authenticate with the specified container registry and remove old image tags based on the configuration file.

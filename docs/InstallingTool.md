@@ -19,3 +19,5 @@ containertagremover --version
 ```
 
 You should see the version number of the installed tool.
+
+Note: DockerHub implementation is experimental.

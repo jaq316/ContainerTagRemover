@@ -4,7 +4,7 @@ Container Tag Remover is a .NET tool written in C# to remove old image tags from
 
 ## Features
 
-- Supports Dockerhub and Azure Container Registry
+- Supports Dockerhub (experimental) and Azure Container Registry
 - Easily extensible to support new container registries
 - Removes old image tags based on SemVer and configuration file
 - Follows SOLID principles
@@ -35,6 +35,8 @@ To authenticate with Dockerhub and Azure Container Registry, you need to set the
 
 * `DOCKERHUB_USERNAME`: Your Dockerhub username.
 * `DOCKERHUB_PASSWORD`: Your Dockerhub password.
+
+Note: Dockerhub implementation is experimental.
 
 Example:
 
