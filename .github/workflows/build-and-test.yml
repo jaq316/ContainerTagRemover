@@ -50,6 +50,8 @@ jobs:
 
     - name: Install GitRelease Manager
       uses: gittools/actions/gitreleasemanager/setup@v3.1.1
+      with:
+        versionSpec: '0.20.x'
 
     - name: Setup GitRelease Manager
       run: |
