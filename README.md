@@ -136,4 +136,4 @@ The GitVersion configuration file (`gitversion.yml`) is included in the reposito
 
 ### GitHub Workflow
 
-The GitHub workflow file (`.github/workflows/build-and-test.yml`) has been updated to include steps for installing and using GitVersion to generate release versions. The workflow will automatically create a new release whenever the main branch is updated. The `Create GitHub release` step now includes the `tag_name` input with the value `${{ steps.gitversion.outputs.FullSemVer }}` and the `release_name` input with the value `Release ${{ steps.gitversion.outputs.FullSemVer }}`.
+The GitHub workflow file (`.github/workflows/build-and-test.yml`) has been updated to include steps for installing and using GitTools actions to generate release versions. The workflow will automatically create a new release whenever the main branch is updated. The `Create GitHub release` step now includes the `tag_name` input with the value `${{ steps.gitversion.outputs.FullSemVer }}` and the `release_name` input with the value `Release ${{ steps.gitversion.outputs.FullSemVer }}`.
