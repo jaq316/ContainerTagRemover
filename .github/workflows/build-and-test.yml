@@ -48,16 +48,6 @@ jobs:
       if: github.event_name != 'pull_request'
       run: dotnet nuget push ./nupkg/*.nupkg  -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
 
-    - name: Install GitRelease Manager
-      uses: gittools/actions/gitreleasemanager/setup@v3.1.1
-      with:
-        versionSpec: '0.20.x'
-
-    - name: Setup GitRelease Manager
-      run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
     - name: Create GitHub release
       if: github.event_name != 'pull_request'
       uses: gittools/actions/gitreleasemanager/create@v3.1.1
