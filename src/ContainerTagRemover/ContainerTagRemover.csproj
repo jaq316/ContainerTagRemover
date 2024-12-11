@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
-    <RootNamespace>ContainerTagRemover</RootNamespace>
+    <RootNamespace>jaq316.ContainerTagRemover</RootNamespace>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>containertagremover</ToolCommandName>
     <PackageOutputPath>./nupkg</PackageOutputPath>
