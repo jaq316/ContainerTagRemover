@@ -24,22 +24,23 @@ jobs:
         dotnet-version: 8.0.x
 
     - name: Install GitVersion
-      run: dotnet tool install -g GitVersion.Tool
+      uses: gittools/actions/gitversion/setup@v0.9.10
 
     - name: Use GitVersion to generate version
-      run: dotnet-gitversion /output json /showvariable FullSemVer
+      id: gitversion
+      uses: gittools/actions/gitversion/execute@v0.9.10
 
     - name: Restore dependencies
       run: dotnet restore src/ContainerTagRemover/ContainerTagRemover.sln
 
     - name: Build solution
-      run: dotnet build src/ContainerTagRemover/ContainerTagRemover.sln --no-restore
+      run: dotnet build src/ContainerTagRemover/ContainerTagRemover.sln --no-restore /p:Version=${{ steps.gitversion.outputs.FullSemVer }}
 
     - name: Run tests
       run: dotnet test src/ContainerTagRemover/ContainerTagRemover.sln --no-build --verbosity normal
 
     - name: Package tool
-      run: dotnet pack src/ContainerTagRemover/ContainerTagRemover.csproj --output ./nupkg
+      run: dotnet pack src/ContainerTagRemover/ContainerTagRemover.csproj --output ./nupkg /p:Version=${{ steps.gitversion.outputs.FullSemVer }}
 
     - name: Publish tool
       if: github.event_name != 'pull_request'
