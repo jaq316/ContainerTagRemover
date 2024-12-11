@@ -43,7 +43,7 @@ jobs:
 
     - name: Publish tool
       if: github.event_name != 'pull_request'
-      run: dotnet nuget push ./nupkg/*.nupkg  -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
+      run: dotnet nuget push ./nupkg/*.nupkg  -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
 
     - name: Create GitHub release
       if: github.event_name != 'pull_request'
