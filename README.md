@@ -124,21 +124,20 @@ If any of the required arguments are not provided, the tool will prompt you to e
 
 This project uses GitVersion to generate release versions. GitVersion is a tool that generates version numbers based on your Git history. It follows Semantic Versioning (SemVer) principles and can be configured to suit your versioning strategy.
 
+## GitHub Release Generation
 
-## GitRelease Manager
-
-This project now uses GitRelease Manager to create GitHub Releases. GitRelease Manager is a tool that helps you manage your GitHub releases by automating the creation and updating of release notes.
+This project now uses the `actions/create-release@v1` action to create GitHub Releases. This action helps you manage your GitHub releases by automating the creation and updating of release notes.
 
 ### Release Generation Process
 
 1. Whenever the main branch is updated, the GitHub workflow will trigger the release generation process.
 2. GitVersion will be used to determine the version number based on the commit history.
-3. GitRelease Manager will be used to create a new release with the generated version number.
+3. The `actions/create-release@v1` action will be used to create a new release with the generated version number.
 
 ### Configuration
 
-The GitRelease Manager configuration file is included in the repository and can be customized to fit your release management strategy. For more information on configuring GitRelease Manager, refer to the [GitRelease Manager documentation](https://github.com/GitTools/actions/blob/main/docs/examples/github/gitreleasemanager/index.md).
+The configuration for the `actions/create-release@v1` action is included in the GitHub workflow file and can be customized to fit your release management strategy. For more information on configuring the `actions/create-release@v1` action, refer to the [GitHub Actions documentation](https://github.com/actions/create-release).
 
 ### GitHub Workflow
 
-The GitHub workflow file (`.github/workflows/build-and-test.yml`) has been updated to include steps for installing and using GitRelease Manager to generate release versions. The workflow will automatically create a new release whenever the main branch is updated. The `Create GitHub release` step now uses `gittools/actions/gitreleasemanager@v1` to create the release.
+The GitHub workflow file (`.github/workflows/build-and-test.yml`) has been updated to include steps for installing and using the `actions/create-release@v1` action to generate release versions. The workflow will automatically create a new release whenever the main branch is updated. The `Create GitHub release` step now uses `actions/create-release@v1` to create the release.
