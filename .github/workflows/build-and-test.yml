@@ -27,7 +27,12 @@ jobs:
       run: dotnet tool install -g GitVersion.Tool
 
     - name: Use GitVersion to generate version
+      id: gitversion
       run: dotnet-gitversion /output json /showvariable FullSemVer
+
+    - name: Set FullSemVer in ContainerTagRemover.csproj
+      run: |
+        sed -i 's/<Version>.*<\/Version>/<Version>${{ steps.gitversion.outputs.FullSemVer }}<\/Version>/' src/ContainerTagRemover/ContainerTagRemover.csproj
 
     - name: Restore dependencies
       run: dotnet restore src/ContainerTagRemover/ContainerTagRemover.sln
@@ -39,7 +44,7 @@ jobs:
       run: dotnet test src/ContainerTagRemover/ContainerTagRemover.sln --no-build --verbosity normal
 
     - name: Package tool
-      run: dotnet pack src/ContainerTagRemover/ContainerTagRemover.csproj --output ./nupkg
+      run: dotnet pack src/ContainerTagRemover/ContainerTagRemover.csproj --output ./nupkg --version-suffix ${{ steps.gitversion.outputs.FullSemVer }}
 
     - name: Publish tool
       if: github.event_name != 'pull_request'
