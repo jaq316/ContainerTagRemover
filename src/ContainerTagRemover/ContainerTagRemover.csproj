@@ -11,6 +11,9 @@
     <Authors>jaq316</Authors>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>docker;tags;cleanup</PackageTags>
+    <Description>A .NET tool to remove old image tags from container registries.</Description>
+    <LicenseUrl>https://github.com/jaq316/ContainerTagRemover/blob/main/LICENSE</LicenseUrl>
+    <ProjectUrl>https://github.com/jaq316/ContainerTagRemover</ProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
