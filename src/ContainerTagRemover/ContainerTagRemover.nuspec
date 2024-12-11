@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>ContainerTagRemover</id>
+    <version>1.0.0</version>
+    <authors>jaq316</authors>
+    <owners>jaq316</owners>
+    <licenseUrl>https://github.com/jaq316/ContainerTagRemover/blob/main/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/jaq316/ContainerTagRemover</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A .NET tool to remove old image tags from container registries.</description>
+    <releaseNotes>Initial release</releaseNotes>
+    <tags>docker tags cleanup</tags>
+  </metadata>
+</package>
