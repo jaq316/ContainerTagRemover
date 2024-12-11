@@ -16,6 +16,8 @@ dotnet test
 
 This will run all the tests in the `ContainerTagRemover.Tests` project and display the test results in the terminal or command prompt.
 
+Note: DockerHub implementation is experimental.
+
 ## Test Frameworks and Libraries
 
 The Container Tag Remover tool uses the following test frameworks and libraries:

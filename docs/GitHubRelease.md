@@ -9,6 +9,8 @@ The GitHub release generation process involves the following steps:
 5. Publish the tool to NuGet.
 6. Create a GitHub release.
 
+Note: DockerHub implementation is experimental.
+
 These steps are automated using GitHub Actions. The workflow file `.github/workflows/build-and-test.yml` defines the steps to build, test, package, and publish the tool, as well as create a GitHub release.
 
 ## GitHub Actions Workflow
