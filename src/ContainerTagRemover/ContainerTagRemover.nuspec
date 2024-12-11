@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>ContainerTagRemover</id>
+    <id>jaq316.ContainerTagRemover</id>
     <version>1.0.0</version>
     <authors>jaq316</authors>
     <owners>jaq316</owners>
