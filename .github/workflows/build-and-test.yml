@@ -58,11 +58,9 @@ jobs:
 
     - name: Create GitHub release
       if: github.event_name != 'pull_request'
-      uses: gittools/actions/gitreleasemanager@v1
+      uses: gittools/actions/gitreleasemanager/create@v3.1.1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ steps.gitversion.outputs.FullSemVer }}
-        release_name: Release ${{ steps.gitversion.outputs.FullSemVer }}
-        draft: false
-        prerelease: false
+        token: ${{ secrets.GITHUB_TOKEN }}
+        name: ${{ steps.gitversion.outputs.FullSemVer }}
