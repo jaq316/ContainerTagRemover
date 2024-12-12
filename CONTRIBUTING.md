@@ -26,6 +26,8 @@ To submit a pull request, follow these steps:
 5. Ensure your changes pass all required checks and tests.
 6. Submit a pull request to the `main` branch of the original repository.
 
+Please use the [Pull Request Template](.github/PULL_REQUEST_TEMPLATE.md) located in the `.github` directory to structure your pull request.
+
 ## Development Setup
 
 To set up the development environment, follow these steps:
