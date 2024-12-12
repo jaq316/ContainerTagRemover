@@ -59,3 +59,5 @@ The GitHub Actions workflow file `.github/workflows/build-and-test.yml` includes
 10. Create a GitHub release (if not a pull request).
 
 The workflow is triggered on pushes to the `main` branch and on pull requests targeting the `main` branch.
+
+Note: The GitHub workflow now prevents execution on changes to the `docs` folder and its contents.
