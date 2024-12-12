@@ -80,3 +80,7 @@ Replace `<registry-url>`, `<image>`, and `<config-file>` with the appropriate va
 If the configuration file is not specified, the tool will use the default values: Major: 2, Minor: 2.
 
 If any of the required arguments are not provided, the tool will prompt you to enter them during execution.
+
+## Contributing
+
+We welcome contributions to this project! Please see the [Contributing Guidelines](CONTRIBUTING.md) for more information on how to get started.
