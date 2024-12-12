@@ -37,3 +37,5 @@ dotnet test --collect:"XPlat Code Coverage"
 ```
 
 The code coverage report will be generated in the `TestResults` directory in the project root. You can open the `coverage.cobertura.xml` file in a code coverage visualization tool to view the detailed code coverage report.
+
+Note: The GitHub workflow now prevents execution on changes to the `docs` folder and its contents.
