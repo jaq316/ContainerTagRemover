@@ -46,6 +46,8 @@ namespace ContainerTagRemover
                 }
             }
 
+            image = image.ToLower();
+
             TagRemovalConfig config;
             try
             {
