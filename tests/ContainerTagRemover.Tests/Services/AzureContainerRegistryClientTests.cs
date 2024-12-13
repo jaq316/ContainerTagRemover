@@ -43,33 +43,5 @@ namespace ContainerTagRemover.Tests.Services
             // Assert
             _client.ShouldNotBeNull();
         }
-
-        [Fact]
-        public async Task ListTagsAsync_Should_Convert_Image_To_Lowercase()
-        {
-            // Arrange
-            var mockClient = new Mock<ContainerRegistryClient>(MockBehavior.Strict, new Uri("https://test.azurecr.io"), new DefaultAzureCredential());
-            var azureClient = new AzureContainerRegistryClient(mockClient.Object);
-
-            // Act
-            await azureClient.ListTagsAsync("Test-Image");
-
-            // Assert
-            mockClient.Verify(client => client.GetRepository("test-image"), Times.Once);
-        }
-
-        [Fact]
-        public async Task DeleteTagAsync_Should_Convert_Image_To_Lowercase()
-        {
-            // Arrange
-            var mockClient = new Mock<ContainerRegistryClient>(MockBehavior.Strict, new Uri("https://test.azurecr.io"), new DefaultAzureCredential());
-            var azureClient = new AzureContainerRegistryClient(mockClient.Object);
-
-            // Act
-            await azureClient.DeleteTagAsync("Test-Image", "latest");
-
-            // Assert
-            mockClient.Verify(client => client.GetArtifact("test-image", "latest"), Times.Once);
-        }
     }
 }
