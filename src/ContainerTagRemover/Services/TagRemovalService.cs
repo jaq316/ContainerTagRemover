@@ -45,20 +45,23 @@ namespace ContainerTagRemover.Services
 
             var tagsToKeep = new HashSet<SemVersion>();
 
-            KeepLatestVersions(semverTags, tagsToKeep, config.Major, v => v.Major);
-            KeepLatestVersions(semverTags, tagsToKeep, config.Minor, v => (v.Major, v.Minor));
+            // First filter the major versions to only include the latest number of major versions as configured
+            var latestMajorVersions = semverTags
+                .GroupBy(v => v.Major)
+                .OrderByDescending(g => g.Key)
+                .Take(config.Major)
+                .SelectMany(g => g)
+                .ToList();
+
+            // Then filter out only the latest number of minor versions for each major version
+            var latestMinorVersions = latestMajorVersions
+                .GroupBy(v => new { v.Major, v.Minor })
+                .SelectMany(g => g.OrderByDescending(v => v, new VersionComparer()).Take(config.Minor))
+                .ToList();
+
+            tagsToKeep.UnionWith(latestMinorVersions);
 
             return semverTags.Where(v => !tagsToKeep.Any(t => t.ToString() == v.ToString())).Select(v => v.ToString());
-        }
-
-        private static void KeepLatestVersions<T>(List<SemVersion> semverTags, HashSet<SemVersion> tagsToKeep, int count, Func<SemVersion, T> keySelector)
-        {
-            var groupedTags = semverTags.GroupBy(keySelector);
-
-            foreach (var group in groupedTags)
-            {
-                tagsToKeep.UnionWith(group.Take(count));
-            }
         }
 
         public virtual List<string> GetRemovedTags()

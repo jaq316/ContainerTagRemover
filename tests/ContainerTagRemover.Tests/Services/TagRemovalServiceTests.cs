@@ -177,6 +177,56 @@ namespace ContainerTagRemover.Tests.Services
         }
 
         [Fact]
+        public void DetermineTagsToRemove_Should_Filter_Latest_Major_Versions()
+        {
+            // Arrange
+            var tags = new List<string> {
+                "1.0.0",
+                "1.1.0",
+                "2.0.0",
+                "2.1.0",
+                "3.0.0",
+                "3.1.0",
+                "4.0.0",
+                "4.1.0",
+            };
+
+            // Act
+            var result = _tagRemovalService.DetermineTagsToRemove(tags);
+
+            // Assert
+            result.ShouldNotContain("3.0.0");
+            result.ShouldNotContain("3.1.0");
+            result.ShouldNotContain("4.0.0");
+            result.ShouldNotContain("4.1.0");
+        }
+
+        [Fact]
+        public void DetermineTagsToRemove_Should_Filter_Latest_Minor_Versions_For_Each_Major_Version()
+        {
+            // Arrange
+            var tags = new List<string> {
+                "1.0.0",
+                "1.1.0",
+                "2.0.0",
+                "2.1.0",
+                "3.0.0",
+                "3.1.0",
+                "4.0.0",
+                "4.1.0",
+                "4.2.0",
+                "4.3.0",
+            };
+
+            // Act
+            var result = _tagRemovalService.DetermineTagsToRemove(tags);
+
+            // Assert
+            result.ShouldNotContain("4.2.0");
+            result.ShouldNotContain("4.3.0");
+        }
+
+        [Fact]
         public void GetRemovedTags_Should_Return_Correct_List()
         {
             // Arrange
