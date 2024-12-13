@@ -81,6 +81,10 @@ If the configuration file is not specified, the tool will use the default values
 
 If any of the required arguments are not provided, the tool will prompt you to enter them during execution.
 
+### Note
+
+Azure container registry image names must be lowercase.
+
 ## Contributing
 
 We welcome contributions to this project! Please see the [Contributing Guidelines](CONTRIBUTING.md) for more information on how to get started.

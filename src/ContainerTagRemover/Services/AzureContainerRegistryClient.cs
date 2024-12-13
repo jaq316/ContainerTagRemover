@@ -35,6 +35,7 @@ namespace ContainerTagRemover.Services
 
         public async Task<IEnumerable<Tag>> ListTagsAsync(string image)
         {
+            image = image.ToLower();
             var tags = new List<Tag>();
             var repository = _client.GetRepository(image);
             foreach (var item in repository.GetAllManifestProperties(ArtifactManifestOrder.LastUpdatedOnDescending))
@@ -46,6 +47,7 @@ namespace ContainerTagRemover.Services
 
         public async Task DeleteTagAsync(string image, string tag)
         {
+            image = image.ToLower();
             RegistryArtifact tagArtifact = _client.GetArtifact(image, tag);
             _ = await tagArtifact.DeleteTagAsync(tag);
         }
