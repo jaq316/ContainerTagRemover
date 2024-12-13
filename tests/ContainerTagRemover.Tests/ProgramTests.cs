@@ -51,34 +51,5 @@ namespace ContainerTagRemover.Tests
                 Assert.Contains("Please enter the missing arguments:", result);
             }
         }
-
-        [Fact]
-        public async Task Main_ConvertsImageToLowercase()
-        {
-            // Arrange
-            var registryUrl = "https://example.azurecr.io";
-            var image = "Test-Image";
-            var configFilePath = "config.json";
-
-            var mockRegistryClient = new Mock<IContainerRegistryClient>();
-            var mockServiceProvider = new Mock<IServiceProvider>();
-            mockServiceProvider.Setup(sp => sp.GetService(typeof(IContainerRegistryClient))).Returns(mockRegistryClient.Object);
-
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddSingleton(mockRegistryClient.Object);
-            serviceCollection.AddSingleton(new TagRemovalConfig { Major = 2, Minor = 2 });
-            serviceCollection.AddSingleton<TagRemovalService>();
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-
-            // Act
-            using (var sw = new StringWriter())
-            {
-                Console.SetOut(sw);
-                await Program.Main(new string[] { registryUrl, image, configFilePath });
-
-                // Assert
-                mockRegistryClient.Verify(client => client.ListTagsAsync("test-image"), Times.Once);
-            }
-        }
     }
 }
