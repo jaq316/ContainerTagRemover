@@ -56,7 +56,7 @@ namespace ContainerTagRemover.Services
             // Then filter out only the latest number of minor versions for each major version
             var latestMinorVersions = latestMajorVersions
                 .GroupBy(v => new { v.Major, v.Minor })
-                .SelectMany(g => g.OrderByDescending(v => v).Take(config.Minor))
+                .SelectMany(g => g.OrderByDescending(v => v, new VersionComparer()).Take(config.Minor))
                 .ToList();
 
             tagsToKeep.UnionWith(latestMinorVersions);
