@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using ContainerTagRemover.Configuration;
@@ -15,10 +17,11 @@ namespace ContainerTagRemover
         public static async Task Main(string[] args)
         {
             string registryUrl, image, configFilePath, outputFilePath = null;
+            var keepTags = new List<string>();
 
             if (args.Length < 2)
             {
-                Console.WriteLine("Usage: ContainerTagRemover <registry-url> <image> <config-file> [--output-file <output-file>]");
+                Console.WriteLine("Usage: ContainerTagRemover <registry-url> <image> <config-file> [--output-file <output-file>] [--keep-tags <tag1,tag2,...>]");
                 Console.WriteLine("Please enter the missing arguments:");
 
                 Console.Write("Registry URL: ");
@@ -41,7 +44,14 @@ namespace ContainerTagRemover
                     if (args[i] == "--output-file" && i + 1 < args.Length)
                     {
                         outputFilePath = args[i + 1];
-                        break;
+                        i++; // Skip the next argument as it's the value
+                    }
+                    else if (args[i] == "--keep-tags" && i + 1 < args.Length)
+                    {
+                        var tagList = args[i + 1];
+                        keepTags.AddRange(tagList.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                            .Select(tag => tag.Trim()));
+                        i++; // Skip the next argument as it's the value
                     }
                 }
             }
@@ -51,8 +61,14 @@ namespace ContainerTagRemover
             TagRemovalConfig config;
             try
             {
-
                 config = TagRemovalConfig.Load(configFilePath);
+                
+                // Merge command line keep tags with configuration keep tags
+                if (keepTags.Any())
+                {
+                    config.KeepTags.AddRange(keepTags);
+                }
+                
                 config.Validate();
             }
             catch (Exception ex)

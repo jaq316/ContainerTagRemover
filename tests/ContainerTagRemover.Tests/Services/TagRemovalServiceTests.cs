@@ -306,5 +306,83 @@ namespace ContainerTagRemover.Tests.Services
             keptTags.ShouldNotContain("1.15.0-alpha.10");
             keptTags.ShouldNotContain("1.15.0-alpha.9");
         }
+
+        [Fact]
+        public void DetermineTagsToRemove_Should_Keep_Explicitly_Specified_Tags()
+        {
+            // Arrange
+            var config = new TagRemovalConfig
+            {
+                Major = 1,
+                Minor = 1,
+                KeepTags = new List<string> { "1.0.0", "1.0.1", "latest", "stable" }
+            };
+
+            var tagRemovalService = new TagRemovalService(_mockRegistryClient.Object, config);
+
+            var tags = new List<string>
+            {
+                "1.0.0", "1.0.1", "1.0.2", "1.0.3", "1.0.4", "1.0.5",
+                "1.1.0", "1.1.1", "1.1.2", "1.1.3",
+                "2.0.0", "2.0.1", "2.0.2",
+                "latest", "stable", "dev"
+            };
+
+            // Act
+            var tagsToRemove = tagRemovalService.DetermineTagsToRemove(tags);
+
+            // Assert
+            tagsToRemove.ShouldNotContain("1.0.0"); // Explicitly kept
+            tagsToRemove.ShouldNotContain("1.0.1"); // Explicitly kept
+            tagsToRemove.ShouldNotContain("latest"); // Explicitly kept
+            tagsToRemove.ShouldNotContain("stable"); // Explicitly kept
+            tagsToRemove.ShouldNotContain("2.0.2"); // Kept by policy (latest major.minor)
+            tagsToRemove.ShouldContain("1.0.2"); // Should be removed (older version, not explicitly kept)
+            tagsToRemove.ShouldContain("1.0.3"); // Should be removed (older version, not explicitly kept)
+            tagsToRemove.ShouldContain("1.0.4"); // Should be removed (older version, not explicitly kept)
+            tagsToRemove.ShouldContain("1.0.5"); // Should be removed (older version, not explicitly kept)
+            tagsToRemove.ShouldContain("1.1.0"); // Should be removed (older version, not explicitly kept)
+            tagsToRemove.ShouldContain("1.1.1"); // Should be removed (older version, not explicitly kept)
+            tagsToRemove.ShouldContain("1.1.2"); // Should be removed (older version, not explicitly kept)
+            tagsToRemove.ShouldContain("1.1.3"); // Should be removed (older version, not explicitly kept)
+            tagsToRemove.ShouldContain("2.0.0"); // Should be removed (older version, not explicitly kept)
+            tagsToRemove.ShouldContain("2.0.1"); // Should be removed (older version, not explicitly kept)
+            tagsToRemove.ShouldContain("dev"); // Should be removed (not explicitly kept)
+        }
+
+        [Fact]
+        public void DetermineTagsToRemove_Should_Keep_Semver_Tags_From_KeepTags()
+        {
+            // Arrange
+            var config = new TagRemovalConfig
+            {
+                Major = 1,
+                Minor = 1,
+                KeepTags = new List<string> { "1.0.0", "1.5.0" }
+            };
+
+            var tagRemovalService = new TagRemovalService(_mockRegistryClient.Object, config);
+
+            var tags = new List<string>
+            {
+                "1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0",
+                "2.0.0", "2.1.0"
+            };
+
+            // Act
+            var tagsToRemove = tagRemovalService.DetermineTagsToRemove(tags);
+
+            // Assert
+            tagsToRemove.ShouldNotContain("1.0.0"); // Explicitly kept
+            tagsToRemove.ShouldNotContain("1.5.0"); // Explicitly kept  
+            tagsToRemove.ShouldNotContain("2.1.0"); // Kept by policy (latest major.minor)
+            tagsToRemove.ShouldContain("1.1.0"); // Should be removed
+            tagsToRemove.ShouldContain("1.2.0"); // Should be removed
+            tagsToRemove.ShouldContain("1.3.0"); // Should be removed
+            tagsToRemove.ShouldContain("1.4.0"); // Should be removed
+            tagsToRemove.ShouldContain("1.6.0"); // Should be removed
+            tagsToRemove.ShouldContain("1.7.0"); // Should be removed
+            tagsToRemove.ShouldContain("2.0.0"); // Should be removed
+        }
     }
 }
