@@ -75,14 +75,17 @@ namespace ContainerTagRemover.Services
                 .ToHashSet();
 
             var tagsToRemove = new List<string>();
-            
+
+            // Build a HashSet of kept tag strings for O(1) lookups
+            var keepStrings = tagsToKeep.Select(t => t.ToString()).ToHashSet();
+
             // Add semver tags that should be removed
-            tagsToRemove.AddRange(semverTags.Where(v => !tagsToKeep.Any(t => t.ToString() == v.ToString())).Select(v => v.ToString()));
-            
+            tagsToRemove.AddRange(semverTags.Where(v => !keepStrings.Contains(v.ToString())).Select(v => v.ToString()));
+
             // Add non-semver tags that should be removed (not in the keep list)
             var nonSemverTags = tags.Where(tag => !SemVersion.TryParse(tag, out _));
             tagsToRemove.AddRange(nonSemverTags.Where(tag => !nonSemverKeptTags.Contains(tag)));
-            
+
             return tagsToRemove;
         }
 
