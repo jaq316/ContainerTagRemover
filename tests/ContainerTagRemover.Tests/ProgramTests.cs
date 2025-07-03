@@ -62,29 +62,37 @@ namespace ContainerTagRemover.Tests
             var keepTags = "tag1,tag2";
 
             // Act
-            using (var sw = new StringWriter())
+            var originalConsoleOut = Console.Out;
+            try
             {
-                Console.SetOut(sw);
-                
-                // This should not throw an exception about missing config file
-                // Instead it should fail on network connectivity (which is expected)
-                try
+                using (var sw = new StringWriter())
                 {
-                    await Program.Main(new string[] { registryUrl, image, "--output-file", outputFile, "--keep-tags", keepTags });
-                }
-                catch (Exception ex)
-                {
-                    // We expect a network-related exception, not a config file exception
-                    Assert.DoesNotContain("Error reading or validating configuration file", ex.Message);
-                    Assert.DoesNotContain("Could not find file", ex.Message);
-                    Assert.DoesNotContain("--output-file", ex.Message);
-                }
+                    Console.SetOut(sw);
+                    
+                    // This should not throw an exception about missing config file
+                    // Instead it should fail on network connectivity (which is expected)
+                    try
+                    {
+                        await Program.Main(new string[] { registryUrl, image, "--output-file", outputFile, "--keep-tags", keepTags });
+                    }
+                    catch (Exception ex)
+                    {
+                        // We expect a network-related exception, not a config file exception
+                        Assert.DoesNotContain("Error reading or validating configuration file", ex.Message);
+                        Assert.DoesNotContain("Could not find file", ex.Message);
+                        Assert.DoesNotContain("--output-file", ex.Message);
+                    }
 
-                // Assert
-                var result = sw.ToString();
-                // Should not contain config file error messages
-                Assert.DoesNotContain("Error reading or validating configuration file", result);
-                Assert.DoesNotContain("Could not find file", result);
+                    // Assert
+                    var result = sw.ToString();
+                    // Should not contain config file error messages
+                    Assert.DoesNotContain("Error reading or validating configuration file", result);
+                    Assert.DoesNotContain("Could not find file", result);
+                }
+            }
+            finally
+            {
+                Console.SetOut(originalConsoleOut);
             }
         }
 

@@ -42,7 +42,7 @@ namespace ContainerTagRemover
                 configFilePath = null;
                 int startIndex = 2;
                 
-                if (args.Length > 2 && !args[2].StartsWith("--"))
+                if (args.Length > 2 && !args[2].StartsWith("--", StringComparison.Ordinal))
                 {
                     configFilePath = args[2];
                     startIndex = 3;

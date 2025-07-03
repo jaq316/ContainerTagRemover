@@ -39,27 +39,26 @@ namespace ContainerTagRemover.Tests.Services
                     ItExpr.Is<HttpRequestMessage>(req =>
                         req.Method == HttpMethod.Post &&
                         req.RequestUri == new Uri("https://hub.docker.com/v2/users/login/") &&
-                        req.Content != null
+                        req.Content != null &&
+                        VerifyRequestContent(req.Content)
                     ),
                     ItExpr.IsAny<CancellationToken>()
                 )
-                .ReturnsAsync(responseMessage)
-                .Callback<HttpRequestMessage, CancellationToken>(async (req, token) =>
-                {
-                    // Verify the content contains expected values asynchronously
-                    if (req.Content != null)
-                    {
-                        var content = await req.Content.ReadAsStringAsync();
-                        content.ShouldContain("test-username");
-                        content.ShouldContain("test-password");
-                    }
-                });
+                .ReturnsAsync(responseMessage);
 
             // Act
             await _dockerhubClient.AuthenticateAsync();
 
             // Assert
             _dockerhubClient.ShouldNotBeNull();
+        }
+
+        private bool VerifyRequestContent(HttpContent content)
+        {
+            var contentString = content.ReadAsStringAsync().Result;
+            contentString.ShouldContain("test-username");
+            contentString.ShouldContain("test-password");
+            return true;
         }
     }
 }
