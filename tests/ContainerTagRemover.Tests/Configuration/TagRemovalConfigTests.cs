@@ -32,7 +32,7 @@ namespace ContainerTagRemover.Tests.Configuration
         public void LoadFromFile_ShouldReturnDefaultValues_WhenFilePathIsNotSpecified()
         {
             // Act
-            TagRemovalConfig config = TagRemovalConfig.Load((string)null);
+            TagRemovalConfig config = TagRemovalConfig.Load((string?)null);
 
             // Assert
             config.Major.ShouldBe(2);
