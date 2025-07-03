@@ -37,9 +37,18 @@ namespace ContainerTagRemover
             {
                 registryUrl = args[0];
                 image = args[1];
-                configFilePath = args.Length > 2 ? args[2] : null;
+                
+                // Check if the third argument exists and is not a flag (doesn't start with --)
+                configFilePath = null;
+                int startIndex = 2;
+                
+                if (args.Length > 2 && !args[2].StartsWith("--", StringComparison.Ordinal))
+                {
+                    configFilePath = args[2];
+                    startIndex = 3;
+                }
 
-                for (int i = 3; i < args.Length; i++)
+                for (int i = startIndex; i < args.Length; i++)
                 {
                     if (args[i] == "--output-file" && i + 1 < args.Length)
                     {

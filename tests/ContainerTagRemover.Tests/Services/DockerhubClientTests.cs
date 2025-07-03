@@ -39,8 +39,8 @@ namespace ContainerTagRemover.Tests.Services
                     ItExpr.Is<HttpRequestMessage>(req =>
                         req.Method == HttpMethod.Post &&
                         req.RequestUri == new Uri("https://hub.docker.com/v2/users/login/") &&
-                        req.Content.ReadAsStringAsync().Result.Contains("test-username") &&
-                        req.Content.ReadAsStringAsync().Result.Contains("test-password")
+                        req.Content != null &&
+                        VerifyRequestContent(req.Content)
                     ),
                     ItExpr.IsAny<CancellationToken>()
                 )
@@ -51,6 +51,14 @@ namespace ContainerTagRemover.Tests.Services
 
             // Assert
             _dockerhubClient.ShouldNotBeNull();
+        }
+
+        private bool VerifyRequestContent(HttpContent content)
+        {
+            var contentString = content.ReadAsStringAsync().Result;
+            contentString.ShouldContain("test-username");
+            contentString.ShouldContain("test-password");
+            return true;
         }
     }
 }
