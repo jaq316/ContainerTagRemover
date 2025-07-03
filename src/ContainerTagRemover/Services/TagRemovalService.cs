@@ -54,7 +54,6 @@ namespace ContainerTagRemover.Services
                 .ToList();
 
             // Then filter out only the latest number of minor versions for each major version
-
             var latestMinorVersions = latestMajorVersions
                 .GroupBy(v => v.Major)
                 .Select(g => new { Major = g.Key, Versions = g.Select(v => v) })
@@ -64,7 +63,27 @@ namespace ContainerTagRemover.Services
 
             tagsToKeep.UnionWith(latestMinorVersions);
 
-            return semverTags.Where(v => !tagsToKeep.Any(t => t.ToString() == v.ToString())).Select(v => v.ToString());
+            // Add explicitly kept tags from configuration
+            var explicitlyKeptTags = config.KeepTags
+                .Select(tag => SemVersion.TryParse(tag, out var version) ? version : null)
+                .Where(version => version != null);
+            tagsToKeep.UnionWith(explicitlyKeptTags);
+
+            // Also keep non-semver tags that are explicitly specified
+            var nonSemverKeptTags = config.KeepTags
+                .Where(tag => !SemVersion.TryParse(tag, out _))
+                .ToHashSet();
+
+            var tagsToRemove = new List<string>();
+            
+            // Add semver tags that should be removed
+            tagsToRemove.AddRange(semverTags.Where(v => !tagsToKeep.Any(t => t.ToString() == v.ToString())).Select(v => v.ToString()));
+            
+            // Add non-semver tags that should be removed (not in the keep list)
+            var nonSemverTags = tags.Where(tag => !SemVersion.TryParse(tag, out _));
+            tagsToRemove.AddRange(nonSemverTags.Where(tag => !nonSemverKeptTags.Contains(tag)));
+            
+            return tagsToRemove;
         }
 
         public virtual List<string> GetRemovedTags()

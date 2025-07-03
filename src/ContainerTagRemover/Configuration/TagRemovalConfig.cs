@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 
@@ -8,6 +9,7 @@ namespace ContainerTagRemover.Configuration
     {
         public int Major { get; set; }
         public int Minor { get; set; }
+        public List<string> KeepTags { get; set; } = new List<string>();
 
         public static TagRemovalConfig Load(string filePath)
         {
